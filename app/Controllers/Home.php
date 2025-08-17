@@ -4,9 +4,21 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index()
+    public function index(): string
     {
-        // This loads app/Views/template.php
-        return view('template');
+        // Load homepage template
+        return view('template', ['content' => 'index']);
+    }
+
+    public function about(): string
+    {
+        // Load about page template
+        return view('template', ['content' => 'about']);
+    }
+
+    public function contact(): string
+    {
+        // Load contact page template
+        return view('template', ['content' => 'contact']);
     }
 }
