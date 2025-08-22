@@ -34,9 +34,13 @@
 </nav>
 
 <div class="container mt-4">
-    <!-- Dynamic content will load here -->
+    <!-- This is where each page will inject its content -->
     <?= $this->renderSection('content') ?>
 </div>
+
+<footer class="bg-dark text-white text-center py-3 mt-4">
+    <p>&copy; <?= date('Y') ?> My Website</p>
+</footer>
 
 </body>
 </html>

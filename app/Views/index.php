@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-</head>
-<body>
-    <h1>Welcome to Homepage</h1>
-    <nav>
-        <a href="<?= site_url('/') ?>">Home</a> |
-        <a href="<?= site_url('about') ?>">About</a> |
-        <a href="<?= site_url('contact') ?>">Contact</a>
-    </nav>
-</body>
-</html>
+<?= $this->extend('template') ?>
+
+<?= $this->section('content') ?>
+    <h1>Welcome to My CI Project</h1>
+    <p>This is the homepage. Use the navigation bar to explore About and Contact pages.</p>
+<?= $this->endSection() ?>

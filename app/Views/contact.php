@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Contact</title>
-</head>
-<body>
-    <h1>Contact Page</h1>
-    <nav>
-        <a href="<?= site_url('/') ?>">Home</a> |
-        <a href="<?= site_url('about') ?>">About</a> |
-        <a href="<?= site_url('contact') ?>">Contact</a>
-    </nav>
-</body>
-</html>
+<?= $this->extend('template') ?>
+
+<?= $this->section('content') ?>
+    <h1>Contact Us</h1>
+    <p>You can reach us at <strong>support@example.com</strong> or call us at <strong>(+63) 912-345-6789</strong>.</p>
+<?= $this->endSection() ?>
