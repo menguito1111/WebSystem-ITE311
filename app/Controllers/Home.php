@@ -6,17 +6,23 @@ class Home extends BaseController
 {
     public function index()
     {
-        return view('index'); // Homepage
+        return view('template', [
+            'content' => view('index')  // loads app/Views/index.php
+        ]);
     }
 
     public function about()
     {
-        return view('about'); // About page
+        return view('template', [
+            'content' => view('about')  // loads app/Views/about.php
+        ]);
     }
 
-    public function contact() // Contact page
+    public function contact()
     {
-        return view('contact');
+        return view('template', [
+            'content' => view('contact')  // loads app/Views/contact.php
+        ]);
     }
 
     public function dashboard()
@@ -26,6 +32,8 @@ class Home extends BaseController
             return redirect()->to(base_url('login'));
         }
 
-        return view('dashboard');
+        return view('template', [
+            'content' => view('dashboard')  // loads app/Views/dashboard.php
+        ]);
     }
 }
