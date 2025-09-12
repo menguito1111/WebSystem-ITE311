@@ -1,93 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My CI Project</title>
-    <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-    body {
-        background-color: #33373c;
-        font-family: "Poppins", sans-serif;
-        margin: 0;
-    }
+  <title>MY WEBSITE</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    /* Top Navbar */
+  <style>
+    /* Custom Navbar Styles */
     .navbar {
-        background: #eaeaeaff; /* soft light blue */
-        box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
-        padding: 10px 20px;
+        background: linear-gradient(90deg, #0d3b24, #000000);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     }
 
     .navbar-brand {
-        font-weight: bold;
-        font-size: 1.3rem;
-        color: #333 !important;
+        font-weight: 700;
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+        color: #4caf50 !important;
+        text-transform: uppercase;
     }
 
     .nav-link {
-        font-size: 1rem;
-        color: #333 !important;
-        padding: 8px 15px;
-        border-radius: 6px;
-        transition: 0.2s;
+        color: #ffffff !important;
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.2s ease;
     }
 
     .nav-link:hover {
-        background: #d0e5fa;
-        color: #000 !important;
+        color: #4caf50 !important;
+        transform: scale(1.05);
     }
 
-    .nav-link.active {
-        background: #fe0000ff;
-        color: #fff !important;
+    /* Buttons */
+    .btn-success {
+        background: linear-gradient(90deg, #28a745, #4caf50);
+        border: none;
+        border-radius: 20px;
+        padding: 6px 14px;
         font-weight: bold;
+        transition: all 0.3s ease;
     }
 
-    /* Main container */
-    .container {
-        background: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        margin-top: 20px;
-        box-shadow: 0px 3px 8px rgba(0,0,0,0.1);
+    .btn-success:hover {
+        background: linear-gradient(90deg, #4caf50, #28a745);
+        transform: scale(1.05);
     }
-</style>
 
+    .btn-danger {
+        background: linear-gradient(90deg, #dc3545, #ff4d4d);
+        border: none;
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
 
+    .btn-danger:hover {
+        background: linear-gradient(90deg, #ff4d4d, #dc3545);
+        transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-
-<!-- Navigation Bar (hide on login & register) -->
-<?php if (!in_array(uri_string(), ['login', 'register'])): ?>
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="<?= site_url('/') ?>">My WebSystem</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link <?= uri_string() == '' ? 'active' : '' ?>" href="<?= site_url('/') ?>">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?= uri_string() == 'about' ? 'active' : '' ?>" href="<?= site_url('about') ?>">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <?= uri_string() == 'contact' ? 'active' : '' ?>" href="<?= site_url('contact') ?>">Contact</a>
-        </li>
-      </ul>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="<?= base_url('/') ?>">MY WEBSITE</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/') ?>">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('about') ?>">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('contact') ?>">Contact</a>
+          </li>
+          <li class="nav-item">
+            <?php if (session()->get('isAuthenticated')): ?>
+              <a class="btn btn-danger ms-3" href="<?= base_url('logout') ?>">Logout</a>
+            <?php else: ?>
+              <a class="btn btn-success ms-3" href="<?= base_url('login') ?>">Login</a>
+            <?php endif; ?>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
-<?php endif; ?>
+  </nav>
 
-<div class="container mt-4">
+  <!-- Main content -->
+  <div class="container mt-4">
     <?= $this->renderSection('content') ?>
-</div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
