@@ -1,3 +1,10 @@
+<?php
+// ============================================
+// SIMPLE UPDATE: ADD ROLE DROPDOWN TO EXISTING REGISTRATION FORM
+// app/Views/auth/register.php (UPDATE YOUR EXISTING FILE)
+// ============================================
+?>
+
 <?= $this->extend('template') ?>
 
 <?= $this->section('content') ?>
@@ -24,6 +31,21 @@
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email" required value="<?= esc(old('email')) ?>">
                 </div>
+                
+                <!-- *** ADD THIS ROLE SELECTION *** -->
+                <div class="mb-3">
+                    <label for="role" class="form-label">I am a:</label>
+                    <select class="form-select" id="role" name="role" required>
+                        <option value="">Select your role...</option>
+                        <option value="student" <?= old('role') === 'student' ? 'selected' : '' ?>>
+                            Student - I want to learn and take courses
+                        </option>
+                        <option value="teacher" <?= old('role') === 'teacher' ? 'selected' : '' ?>>
+                            Teacher - I want to create and manage courses
+                        </option>
+                    </select>
+                </div>
+                
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password" required>

@@ -6,82 +6,145 @@ use CodeIgniter\Controller;
 
 class Auth extends Controller
 {
-    public function register()
-    {
-        helper(['form']);
-        $session = session();
-        $model = new UserModel();
+public function register()
+{
+    helper(['form']);
+    $session = session();
+    $model = new UserModel();
+    
+    if ($this->request->getMethod() === 'POST') {
+        log_message('info', 'Registration POST request received');
+        log_message('info', 'POST data: ' . print_r($this->request->getPost(), true));
         
-        if ($this->request->getMethod() === 'POST') {
-            // Add detailed logging
-            log_message('info', 'Registration POST request received');
-            log_message('info', 'POST data: ' . print_r($this->request->getPost(), true));
+        $rules = [
+            'name' => 'required|min_length[3]|max_length[100]',
+            'email' => 'required|valid_email|is_unique[users.email]',
+            'password' => 'required|min_length[6]',
+            'password_confirm' => 'matches[password]',
+            'role' => 'required|in_list[student,teacher]'  // *** ADD THIS LINE ***
+        ];
+        
+        if ($this->validate($rules)) {
+            log_message('info', 'Validation passed');
             
-            $rules = [
-                'name' => 'required|min_length[3]|max_length[100]',
-                'email' => 'required|valid_email|is_unique[users.email]',
-                'password' => 'required|min_length[6]',
-                'password_confirm' => 'matches[password]'
-            ];
-            
-            if ($this->validate($rules)) {
-                log_message('info', 'Validation passed');
+            try {
+                $name = trim($this->request->getPost('name'));
+                $email = $this->request->getPost('email');
+                $role = $this->request->getPost('role'); // *** ADD THIS LINE ***
                 
-                try {
-                    // Get the data from form
-                    $name = trim($this->request->getPost('name'));
-                    $email = $this->request->getPost('email');
+                $data = [
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => $this->request->getPost('password'),
+                    'role' => $role  // *** CHANGE THIS FROM 'student' TO $role ***
+                ];
+                
+                log_message('info', 'Attempting to insert user data: ' . print_r($data, true));
+                
+                $insertResult = $model->insert($data);
+                
+                if ($insertResult) {
+                    log_message('info', 'User inserted successfully with ID: ' . $insertResult);
+                    // *** UPDATE SUCCESS MESSAGE TO INCLUDE ROLE ***
+                    $session->setFlashdata('register_success', 'Registration successful as ' . ucfirst($role) . '. Please login.');
+                    return redirect()->to(base_url('login'));
+                } else {
+                    $errors = $model->errors();
+                    $errorMessage = 'Registration failed. ';
                     
-                    $data = [
-                        'name' => $name,
-                        'email' => $email,
-                        'password' => $this->request->getPost('password'), // Let model handle hashing
-                        'role' => 'student'
-                    ];
+                    log_message('error', 'Model insert failed. Errors: ' . print_r($errors, true));
+                    log_message('error', 'Model validation errors: ' . print_r($model->getValidationMessages(), true));
                     
-                    log_message('info', 'Attempting to insert user data: ' . print_r($data, true));
-                    
-                    // Save user to database
-                    $insertResult = $model->insert($data);
-                    
-                    if ($insertResult) {
-                        log_message('info', 'User inserted successfully with ID: ' . $insertResult);
-                        $session->setFlashdata('register_success', 'Registration successful. Please login.');
-                        return redirect()->to(base_url('login'));
+                    if (!empty($errors)) {
+                        $errorMessage .= implode(', ', $errors);
                     } else {
-                        // Get the last error for debugging
-                        $errors = $model->errors();
-                        $errorMessage = 'Registration failed. ';
-                        
-                        log_message('error', 'Model insert failed. Errors: ' . print_r($errors, true));
-                        log_message('error', 'Model validation errors: ' . print_r($model->getValidationMessages(), true));
-                        
-                        if (!empty($errors)) {
-                            $errorMessage .= implode(', ', $errors);
-                        } else {
-                            $errorMessage .= 'Please try again.';
-                        }
-                        $session->setFlashdata('register_error', $errorMessage);
+                        $errorMessage .= 'Please try again.';
                     }
-                } catch (\Exception $e) {
-                    log_message('error', 'Registration exception: ' . $e->getMessage());
-                    log_message('error', 'Stack trace: ' . $e->getTraceAsString());
-                    $session->setFlashdata('register_error', 'Registration failed. Please try again. Error: ' . $e->getMessage());
+                    $session->setFlashdata('register_error', $errorMessage);
                 }
-            } else {
-                // Validation failed
-                $validationErrors = $this->validator->getErrors();
-                log_message('error', 'Validation failed: ' . print_r($validationErrors, true));
-                
-                $errorMessage = 'Validation failed: ' . implode(', ', $validationErrors);
-                $session->setFlashdata('register_error', $errorMessage);
+            } catch (\Exception $e) {
+                log_message('error', 'Registration exception: ' . $e->getMessage());
+                log_message('error', 'Stack trace: ' . $e->getTraceAsString());
+                $session->setFlashdata('register_error', 'Registration failed. Please try again. Error: ' . $e->getMessage());
             }
+        } else {
+            $validationErrors = $this->validator->getErrors();
+            log_message('error', 'Validation failed: ' . print_r($validationErrors, true));
+            
+            $errorMessage = 'Validation failed: ' . implode(', ', $validationErrors);
+            $session->setFlashdata('register_error', $errorMessage);
         }
-        
-        return view('auth/register', [
-            'validation' => $this->validator
-        ]);
     }
+    
+    return view('auth/register', [
+        'validation' => $this->validator
+    ]);
+}
+public function registerChoice()
+{
+    // Show the registration type selection page
+    return view('auth/register_choice');
+}
+
+public function registerStudent()
+{
+    return $this->handleRoleRegistration('student');
+}
+
+public function registerTeacher()
+{
+    return $this->handleRoleRegistration('teacher');
+}
+
+private function handleRoleRegistration($role)
+{
+    helper(['form']);
+    $session = session();
+    $model = new UserModel();
+    
+    if ($this->request->getMethod() === 'POST') {
+        $rules = [
+            'name' => 'required|min_length[3]|max_length[100]',
+            'email' => 'required|valid_email|is_unique[users.email]',
+            'password' => 'required|min_length[6]',
+            'password_confirm' => 'matches[password]'
+        ];
+        
+        if ($this->validate($rules)) {
+            try {
+                $data = [
+                    'name' => trim($this->request->getPost('name')),
+                    'email' => $this->request->getPost('email'),
+                    'password' => $this->request->getPost('password'),
+                    'role' => $role  // *** ROLE IS SET BY URL PARAMETER ***
+                ];
+                
+                $insertResult = $model->insert($data);
+                
+                if ($insertResult) {
+                    $session->setFlashdata('register_success', 'Registration successful as ' . ucfirst($role) . '. Please login.');
+                    return redirect()->to(base_url('login'));
+                } else {
+                    $session->setFlashdata('register_error', 'Registration failed. Please try again.');
+                }
+            } catch (\Exception $e) {
+                $session->setFlashdata('register_error', 'Registration failed. Error: ' . $e->getMessage());
+            }
+        } else {
+            $session->setFlashdata('register_error', 'Validation failed: ' . implode(', ', $this->validator->getErrors()));
+        }
+    }
+    
+    // Load role-specific registration form
+    return view('auth/register_' . $role, [
+        'validation' => $this->validator,
+        'role' => $role
+    ]);
+}
+
+
+
+
 
     public function login()
     {
@@ -105,7 +168,6 @@ class Auth extends Controller
                     $user = $model->where('email', $email)->first();
                     
                     if ($user && password_verify($password, $user['password'])) {
-                        // Use the name field directly from database
                         $userName = $user['name'] ?? $user['email'];
                         
                         // Set session data
@@ -122,14 +184,10 @@ class Auth extends Controller
                         $session->set($sessionData);
                         $session->setFlashdata('success', 'Welcome, ' . $userName . '!');
 
-                        // Role-based redirect (admin-only for now)
-                        $role = strtolower($sessionData['role'] ?? 'student');
-                        if ($role === 'admin') {
-                            return redirect()->to('/admin/dashboard');
-                        }
-
-                        // Fallback to home for non-admins (generic dashboard removed)
-                        return redirect()->to('/');
+                        // *** STEP 2: UNIFIED DASHBOARD REDIRECT ***
+                        // Redirect everyone to the unified dashboard
+                        return redirect()->to('/dashboard');
+                        
                     } else {
                         $session->setFlashdata('login_error', 'Invalid email or password.');
                     }
@@ -154,23 +212,81 @@ class Auth extends Controller
         return redirect()->to('login');
     }
 
+    // *** STEP 3: ENHANCED DASHBOARD METHOD ***
     public function dashboard()
     {
         $session = session();
         
-        // Check if user is logged in
+        // Authorization check - ensure user is logged in
         if (!$session->get('isLoggedIn')) {
             $session->setFlashdata('login_error', 'Please login to access the dashboard.');
             return redirect()->to('login');
         }
         
-        // Pass user data to the view
+        // Get user role and basic info
+        $userRole = $session->get('role');
+        $userId = $session->get('user_id');
+        
+        // Base data for all users
         $data = [
             'user_name' => $session->get('user_name'),
             'user_email' => $session->get('user_email'),
-            'role' => $session->get('role')
+            'user_role' => $userRole,
+            'title' => ucfirst($userRole) . ' Dashboard'
         ];
         
-        return view('dashboard', $data);
+        // Fetch role-specific data from database
+        $userModel = new UserModel();
+        
+        switch ($userRole) {
+            case 'admin':
+                // Admin-specific data
+                $data['total_users'] = $userModel->countAllResults();
+                $data['total_admins'] = $userModel->where('role', 'admin')->countAllResults();
+                $data['total_teachers'] = $userModel->where('role', 'teacher')->countAllResults();
+                $data['total_students'] = $userModel->where('role', 'student')->countAllResults();
+                
+                // Get courses count (with error handling if table doesn't exist)
+                $db = \Config\Database::connect();
+                try {
+                    $data['total_courses'] = $db->table('courses')->countAllResults();
+                } catch (\Throwable $e) {
+                    $data['total_courses'] = 0;
+                }
+                
+                // Recent users for admin
+                $data['recent_users'] = $userModel->orderBy('created_at', 'DESC')->limit(5)->find();
+                break;
+                
+            case 'teacher':
+                // Teacher-specific data
+                try {
+                    $db = \Config\Database::connect();
+                    // Placeholder for teacher's courses (if courses table exists)
+                    $data['my_courses'] = []; // Will be populated when course management is implemented
+                    $data['total_students_in_courses'] = 0; // Placeholder
+                } catch (\Throwable $e) {
+                    $data['my_courses'] = [];
+                    $data['total_students_in_courses'] = 0;
+                }
+                break;
+                
+            case 'student':
+                // Student-specific data
+                try {
+                    $db = \Config\Database::connect();
+                    // Placeholder for student's enrollments (if enrollments table exists)
+                    $data['enrolled_courses'] = []; // Will be populated when enrollment is implemented
+                    $data['recent_grades'] = []; // Placeholder for grades
+                } catch (\Throwable $e) {
+                    $data['enrolled_courses'] = [];
+                    $data['recent_grades'] = [];
+                }
+                break;
+        }
+        
+        // *** STEP 4: LOAD UNIFIED DASHBOARD VIEW ***
+        return view('auth/dashboard', $data);
     }
 }
+?>
