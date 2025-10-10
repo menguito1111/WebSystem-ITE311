@@ -262,9 +262,16 @@ private function handleRoleRegistration($role)
                 // Teacher-specific data
                 try {
                     $db = \Config\Database::connect();
-                    // Placeholder for teacher's courses (if courses table exists)
-                    $data['my_courses'] = []; // Will be populated when course management is implemented
-                    $data['total_students_in_courses'] = 0; // Placeholder
+                    // Since courses table has no teacher_id yet, show all courses
+                    $myCourses = $db->table('courses')->orderBy('id', 'ASC')->get()->getResultArray();
+                    $data['my_courses'] = $myCourses;
+
+                    // Total students across all courses (simple aggregate)
+                    try {
+                        $data['total_students_in_courses'] = $db->table('enrollments')->countAllResults();
+                    } catch (\Throwable $e) {
+                        $data['total_students_in_courses'] = 0;
+                    }
                 } catch (\Throwable $e) {
                     $data['my_courses'] = [];
                     $data['total_students_in_courses'] = 0;
@@ -272,14 +279,31 @@ private function handleRoleRegistration($role)
                 break;
                 
             case 'student':
-                // Student-specific data
                 try {
                     $db = \Config\Database::connect();
-                    // Placeholder for student's enrollments (if enrollments table exists)
-                    $data['enrolled_courses'] = []; // Will be populated when enrollment is implemented
-                    $data['recent_grades'] = []; // Placeholder for grades
+                    // Enrolled courses
+                    $enrolled = $db->table('enrollments e')
+                        ->select('c.*')
+                        ->join('courses c', 'c.id = e.course_id', 'inner')
+                        ->where('e.user_id', $userId)
+                        ->orderBy('c.id', 'ASC')
+                        ->get()
+                        ->getResultArray();
+
+                    // Available courses (not enrolled)
+                    $enrolledIds = array_map(function($c){ return $c['id'] ?? 0; }, $enrolled);
+                    if (empty($enrolledIds)) {
+                        $available = $db->table('courses')->orderBy('id','ASC')->get()->getResultArray();
+                    } else {
+                        $available = $db->table('courses')->whereNotIn('id', $enrolledIds)->orderBy('id','ASC')->get()->getResultArray();
+                    }
+
+                    $data['enrolled_courses'] = $enrolled;
+                    $data['available_courses'] = $available;
+                    $data['recent_grades'] = [];
                 } catch (\Throwable $e) {
                     $data['enrolled_courses'] = [];
+                    $data['available_courses'] = [];
                     $data['recent_grades'] = [];
                 }
                 break;

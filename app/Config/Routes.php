@@ -22,3 +22,8 @@ $routes->get('dashboard', 'Auth::dashboard');
 
 // Admin routes (keep existing for backward compatibility)
 $routes->get('admin/dashboard', 'Admin::dashboard');
+
+// Enrollment route
+$routes->post('/course/enroll', 'Course::enroll');
+// Course create route
+$routes->post('/course/create', 'Course::create');

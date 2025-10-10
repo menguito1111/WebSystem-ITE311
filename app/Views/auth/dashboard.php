@@ -137,22 +137,42 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card-lite">
-                <h5 class="mb-3">My Courses</h5>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    Course management features will be available soon. You can create and manage your courses here.
-                </div>
-                <button class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Create New Course
-                </button>
+                <h5 class="mb-3">Create New Course</h5>
+                <form id="create-course-form" method="post" action="<?= site_url('/course/create') ?>">
+                    <?= csrf_field() ?>
+                    <div class="mb-3">
+                        <label for="course-title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="course-title" name="title" placeholder="e.g., Introduction to PHP" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="course-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="course-description" name="description" rows="3" placeholder="Optional description"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btn-create-course">
+                        <i class="fas fa-plus"></i> Create Course
+                    </button>
+                </form>
             </div>
             
             <div class="card-lite mt-3">
-                <h5 class="mb-3">Recent Activity</h5>
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    No recent activity to display.
-                </div>
+                <h5 class="mb-3">My Courses</h5>
+                <?php $myCourses = $my_courses ?? []; ?>
+                <?php if (!empty($myCourses)): ?>
+                    <ul class="list-group" id="teacher-courses-list">
+                        <?php foreach ($myCourses as $course): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <?= esc($course['title'] ?? ('Course #' . ($course['id'] ?? ''))) ?>
+                                    <?php if (!empty($course['description'])): ?>
+                                        <small class="text-muted d-block"><?= esc($course['description']) ?></small>
+                                    <?php endif; ?>
+                                </span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div class="text-muted">No courses yet. Create your first course above.</div>
+                <?php endif; ?>
             </div>
         </div>
         <div class="col-md-4">
@@ -184,51 +204,125 @@
         </div>
     </div>
 
+    <!-- jQuery for AJAX course creation -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            $('#create-course-form').on('submit', function(e){
+                e.preventDefault();
+                var $btn = $('#btn-create-course');
+                $btn.prop('disabled', true).text('Creating...');
+                var $form = $(this);
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: $form.serialize()
+                }).done(function(resp){
+                    var message = resp && resp.message ? resp.message : 'Course created';
+                    var course = resp && resp.course ? resp.course : null;
+                    var $alert = $('<div class="alert alert-success mt-3" role="alert"></div>').text(message);
+                    $('.section-surface').prepend($alert);
+                    if (course) {
+                        var $list = $('#teacher-courses-list');
+                        if ($list.length === 0) {
+                            $list = $('<ul class="list-group" id="teacher-courses-list"></ul>');
+                            $('.card-lite.mt-3').eq(0).find('.text-muted').remove();
+                            $('.card-lite.mt-3').eq(0).append($list);
+                        }
+                        var $li = $('<li class="list-group-item d-flex justify-content-between align-items-center"></li>');
+                        var html = '<span>' + (course.title || ('Course #' + course.id)) + (course.description ? '<small class="text-muted d-block">' + course.description + '</small>' : '') + '</span>';
+                        $li.html(html);
+                        $list.append($li);
+                        $('#create-course-form')[0].reset();
+                    }
+                }).fail(function(xhr){
+                    var msg = 'Failed to create course';
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.message) { msg = xhr.responseJSON.message; }
+                    var $alert = $('<div class="alert alert-danger mt-3" role="alert"></div>').text(msg);
+                    $('.section-surface').prepend($alert);
+                }).always(function(){
+                    $btn.prop('disabled', false).html('<i class="fas fa-plus"></i> Create Course');
+                });
+            });
+        });
+    </script>
+
 <?php else: // STUDENT DASHBOARD ?>
     <!-- STUDENT DASHBOARD CONTENT -->
     <div class="row">
-        <div class="col-md-8">
-            <div class="card-lite">
-                <h5 class="mb-3">My Courses</h5>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    You're not enrolled in any courses yet. Contact your teacher or administrator to get enrolled.
-                </div>
-            </div>
-            
-            <div class="card-lite mt-3">
-                <h5 class="mb-3">Assignments</h5>
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    No assignments due at this time.
-                </div>
+        <div class="col-md-6">
+            <div class="card-lite mb-3">
+                <h5 class="mb-3">Enrolled Courses</h5>
+                <?php $enrolled = $enrolled_courses ?? []; ?>
+                <?php if (!empty($enrolled)): ?>
+                    <ul class="list-group">
+                        <?php foreach ($enrolled as $course): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <?= esc($course['title'] ?? ('Course #' . ($course['id'] ?? ''))) ?>
+                                    <?php if (!empty($course['description'])): ?>
+                                        <small class="text-muted d-block"><?= esc($course['description']) ?></small>
+                                    <?php endif; ?>
+                                </span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div class="text-muted">No enrolled courses yet.</div>
+                <?php endif; ?>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card-lite mb-3">
-                <h5 class="mb-3">Recent Grades</h5>
-                <div class="text-center text-muted">
-                    <i class="fas fa-chart-line fa-3x mb-2"></i>
-                    <p>No grades available yet.</p>
-                </div>
-            </div>
-            
-            <div class="card-lite">
-                <h5 class="mb-3">Quick Links</h5>
-                <div class="d-grid gap-2">
-                    <a href="#" class="btn btn-primary">
-                        <i class="fas fa-book-open"></i> Course Materials
-                    </a>
-                    <a href="#" class="btn btn-outline-primary">
-                        <i class="fas fa-file-alt"></i> Submit Assignment
-                    </a>
-                    <a href="#" class="btn btn-outline-secondary">
-                        <i class="fas fa-calendar-check"></i> View Schedule
-                    </a>
-                </div>
+                <h5 class="mb-3">Available Courses</h5>
+                <?php $available = $available_courses ?? []; ?>
+                <?php if (!empty($available)): ?>
+                    <ul class="list-group" id="available-courses-list">
+                        <?php foreach ($available as $course): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <?= esc($course['title'] ?? ('Course #' . ($course['id'] ?? ''))) ?>
+                                    <?php if (!empty($course['description'])): ?>
+                                        <small class="text-muted d-block"><?= esc($course['description']) ?></small>
+                                    <?php endif; ?>
+                                </span>
+                                <button class="btn btn-sm btn-primary btn-enroll" data-course-id="<?= esc($course['id']) ?>">Enroll</button>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div class="text-muted">No available courses.</div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
+
+    <!-- jQuery for AJAX enrollment -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            $(document).on('click', '.btn-enroll', function(e){
+                e.preventDefault();
+                var $btn = $(this);
+                var courseId = $btn.data('course-id');
+                $btn.prop('disabled', true).text('Enrolling...');
+                $.post('<?= site_url('/course/enroll') ?>', { course_id: courseId })
+                    .done(function(resp){
+                        var message = resp && resp.message ? resp.message : 'Enrolled';
+                        var $alert = $('<div class="alert alert-success mt-3" role="alert"></div>').text(message);
+                        $('.section-surface').prepend($alert);
+                        $btn.closest('li').fadeOut(200, function(){ $(this).remove(); });
+                    })
+                    .fail(function(xhr){
+                        var msg = 'Failed to enroll';
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.message) { msg = xhr.responseJSON.message; }
+                        var $alert = $('<div class="alert alert-danger mt-3" role="alert"></div>').text(msg);
+                        $('.section-surface').prepend($alert);
+                        $btn.prop('disabled', false).text('Enroll');
+                    });
+            });
+        });
+    </script>
 <?php endif; ?>
 
 <?= $this->endSection() ?>

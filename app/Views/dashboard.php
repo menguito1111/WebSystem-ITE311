@@ -32,4 +32,81 @@
 		<p class="mb-2">This is a protected page only visible after login.</p>
 		<p class="text-muted mb-0">You are successfully logged in as <?= esc(session('role')) ?>.</p>
 	</div>
+
+	<?php if ((session('role') ?? '') === 'student'): ?>
+		<div class="row mt-3">
+			<div class="col-md-6">
+				<div class="card-lite mb-3">
+					<h5 class="mb-3">Enrolled Courses</h5>
+					<?php $enrolled = $enrolled_courses ?? []; ?>
+					<?php if (!empty($enrolled)): ?>
+						<ul class="list-group">
+							<?php foreach ($enrolled as $course): ?>
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<span>
+										<?= esc($course['title'] ?? ('Course #' . ($course['id'] ?? ''))) ?>
+										<?php if (!empty($course['description'])): ?>
+											<small class="text-muted d-block"><?= esc($course['description']) ?></small>
+										<?php endif; ?>
+									</span>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					<?php else: ?>
+						<div class="text-muted">No enrolled courses yet.</div>
+					<?php endif; ?>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card-lite mb-3">
+					<h5 class="mb-3">Available Courses</h5>
+					<?php $available = $available_courses ?? []; ?>
+					<?php if (!empty($available)): ?>
+						<ul class="list-group" id="available-courses-list">
+							<?php foreach ($available as $course): ?>
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<span>
+										<?= esc($course['title'] ?? ('Course #' . ($course['id'] ?? ''))) ?>
+										<?php if (!empty($course['description'])): ?>
+											<small class="text-muted d-block"><?= esc($course['description']) ?></small>
+										<?php endif; ?>
+									</span>
+									<button class="btn btn-sm btn-primary btn-enroll" data-course-id="<?= esc($course['id']) ?>">Enroll</button>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					<?php else: ?>
+						<div class="text-muted">No available courses.</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+
+		<!-- jQuery CDN -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script>
+			$(function(){
+				$(document).on('click', '.btn-enroll', function(e){
+					e.preventDefault();
+					var $btn = $(this);
+					var courseId = $btn.data('course-id');
+					$btn.prop('disabled', true).text('Enrolling...');
+					$.post('<?= site_url('/course/enroll') ?>', { course_id: courseId })
+						.done(function(resp){
+							var message = resp && resp.message ? resp.message : 'Enrolled';
+							var $alert = $('<div class="alert alert-success mt-3" role="alert"></div>').text(message);
+							$('.section-surface').prepend($alert);
+							$btn.closest('li').fadeOut(200, function(){ $(this).remove(); });
+						})
+						.fail(function(xhr){
+							var msg = 'Failed to enroll';
+							if (xhr && xhr.responseJSON && xhr.responseJSON.message) { msg = xhr.responseJSON.message; }
+							var $alert = $('<div class="alert alert-danger mt-3" role="alert"></div>').text(msg);
+							$('.section-surface').prepend($alert);
+							$btn.prop('disabled', false).text('Enroll');
+						});
+				});
+			});
+		</script>
+	<?php endif; ?>
 <?= $this->endSection() ?>
