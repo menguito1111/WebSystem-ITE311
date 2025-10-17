@@ -184,9 +184,20 @@ private function handleRoleRegistration($role)
                         $session->set($sessionData);
                         $session->setFlashdata('success', 'Welcome, ' . $userName . '!');
 
-                        // *** STEP 2: UNIFIED DASHBOARD REDIRECT ***
-                        // Redirect everyone to the unified dashboard
-                        return redirect()->to('/dashboard');
+                        // *** STEP 2: ROLE-BASED REDIRECT ***
+                        // Redirect users based on their role
+                        $userRole = $user['role'] ?? 'student';
+                        
+                        switch ($userRole) {
+                            case 'student':
+                                return redirect()->to('/announcements');
+                            case 'teacher':
+                                return redirect()->to('/dashboard');
+                            case 'admin':
+                                return redirect()->to('/dashboard');
+                            default:
+                                return redirect()->to('/announcements');
+                        }
                         
                     } else {
                         $session->setFlashdata('login_error', 'Invalid email or password.');
