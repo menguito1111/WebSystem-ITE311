@@ -118,12 +118,17 @@
 				<?php if ($isLoggedIn): ?>
 					<!-- ROLE-SPECIFIC NAVIGATION -->
 					<li class="nav-item">
-						<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
-							<i class="fas fa-tachometer-alt"></i> Dashboard
+						<a class="nav-link <?= uri_string() == 'announcements' ? 'active' : '' ?>" href="<?= site_url('announcements') ?>">
+							<i class="fas fa-bullhorn"></i> Announcements
 						</a>
 					</li>
 					
 					<?php if ($role === 'admin'): ?>
+						<li class="nav-item">
+							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
+								<i class="fas fa-tachometer-alt"></i> Dashboard
+							</a>
+						</li>
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
 								<i class="fas fa-user-shield"></i> Admin Tools
@@ -137,6 +142,11 @@
 							</ul>
 						</li>
 					<?php elseif ($role === 'teacher'): ?>
+						<li class="nav-item">
+							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
+								<i class="fas fa-tachometer-alt"></i> Dashboard
+							</a>
+						</li>
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="#" id="teacherDropdown" role="button" data-bs-toggle="dropdown">
 								<i class="fas fa-chalkboard-teacher"></i> Teaching Tools
@@ -150,6 +160,11 @@
 							</ul>
 						</li>
 					<?php elseif ($role === 'student'): ?>
+						<li class="nav-item">
+							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
+								<i class="fas fa-tachometer-alt"></i> Dashboard
+							</a>
+						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="#">
 								<i class="fas fa-book-open"></i> My Courses
