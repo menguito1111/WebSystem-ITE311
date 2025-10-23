@@ -20,8 +20,6 @@ $routes->get('logout', 'Auth::logout');
 // *** STEP 6: ADD UNIFIED DASHBOARD ROUTE ***
 $routes->get('dashboard', 'Auth::dashboard');
 
-// Announcements route - redirects to dashboard for all users
-$routes->get('announcements', 'Auth::dashboard');
 
 // Admin routes (keep existing for backward compatibility)
 $routes->get('admin/dashboard', 'Admin::dashboard');

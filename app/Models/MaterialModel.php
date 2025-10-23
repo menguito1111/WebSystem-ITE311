@@ -11,15 +11,15 @@ class MaterialModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
-    protected $protectFields = true;
-    protected $allowedFields = ['course_id', 'file_name', 'file_path'];
+    protected $protectFields = false;
+    protected $allowedFields = ['course_id', 'file_name', 'file_path', 'uploaded_at'];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat = 'datetime';
-    protected $createdField = 'created_at';
+    protected $createdField = null;
     protected $updatedField = null; // No updated_at field in materials table
-    protected $deletedField = 'deleted_at';
+    protected $deletedField = null; // No soft deletes
 
     // Validation
     protected $validationRules = [
@@ -50,7 +50,7 @@ class MaterialModel extends Model
      */
     public function insertMaterial($data)
     {
-        // Don't remove created_at - let the model handle it with useTimestamps
+        // The model will automatically handle created_at timestamp
         return $this->insert($data);
     }
 
@@ -63,7 +63,7 @@ class MaterialModel extends Model
     public function getMaterialsByCourse($course_id)
     {
         return $this->where('course_id', $course_id)
-                    ->orderBy('created_at', 'DESC')
+                    ->orderBy('uploaded_at', 'DESC')
                     ->findAll();
     }
 

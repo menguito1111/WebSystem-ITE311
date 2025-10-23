@@ -17,7 +17,7 @@ class Materials extends BaseController
         $this->materialModel = new MaterialModel();
         $this->courseModel = new CourseModel();
         $this->enrollmentModel = new EnrollmentModel();
-        helper(['session', 'url', 'form']);
+        helper(['session', 'url', 'form', 'download']);
     }
 
     /**
@@ -52,9 +52,16 @@ class Materials extends BaseController
             return redirect()->to('/admin/courses')->with('error', 'Course not found.');
         }
 
-        if ($this->request->getMethod() === 'post') {
+        log_message('info', 'Request method: ' . $this->request->getMethod());
+        log_message('info', 'Request is POST: ' . ($this->request->is('post') ? 'true' : 'false'));
+        log_message('info', 'All POST data: ' . print_r($this->request->getPost(), true));
+        log_message('info', 'All FILES data: ' . print_r($this->request->getFiles(), true));
+        
+        if ($this->request->is('post')) {
             log_message('info', 'POST request received, calling handleFileUpload');
             return $this->handleFileUpload($course_id);
+        } else {
+            log_message('info', 'Not a POST request, displaying upload form');
         }
 
         // Display upload form
@@ -75,6 +82,7 @@ class Materials extends BaseController
      */
     private function handleFileUpload($course_id)
     {
+        log_message('info', '=== HANDLE FILE UPLOAD METHOD CALLED ===');
         log_message('info', 'Starting file upload process for course ID: ' . $course_id);
         
         $validation = \Config\Services::validation();
@@ -122,26 +130,28 @@ class Materials extends BaseController
             if ($moveResult) {
                 // Prepare data for database
                 $data = [
-                    'course_id' => $course_id,
+                    'course_id' => (int) $course_id,
                     'file_name' => $file->getClientName(),
-                    'file_path' => 'uploads/materials/' . $newName
+                    'file_path' => 'uploads/materials/' . $newName,
+                    'uploaded_at' => date('Y-m-d H:i:s')
                 ];
 
                 log_message('info', 'Attempting to save material to database: ' . print_r($data, true));
 
                 // Save to database
                 log_message('info', 'Attempting database insert with data: ' . print_r($data, true));
-                $insertResult = $this->materialModel->insertMaterial($data);
-                log_message('info', 'Database insert result: ' . ($insertResult ? $insertResult : 'false'));
+                try {
+                    $insertResult = $this->materialModel->insertMaterial($data);
+                    log_message('info', 'Database insert result: ' . ($insertResult ? $insertResult : 'false'));
+                } catch (\Exception $e) {
+                    log_message('error', 'Database insert exception: ' . $e->getMessage());
+                    $insertResult = false;
+                }
                 
                 if ($insertResult) {
                     log_message('info', 'Material saved successfully with ID: ' . $insertResult);
-                    // Redirect based on user role
-                    if (session()->get('role') === 'teacher') {
-                        return redirect()->to('/dashboard')->with('success', 'Material uploaded successfully.');
-                    } else {
-                        return redirect()->to('/admin/courses')->with('success', 'Material uploaded successfully.');
-                    }
+                    // Redirect to course materials view to show the uploaded file
+                    return redirect()->to('/course/' . $course_id . '/materials')->with('success', 'Material uploaded successfully.');
                 } else {
                     // Delete uploaded file if database insert fails
                     unlink($uploadPath . $newName);
@@ -161,7 +171,7 @@ class Materials extends BaseController
             return redirect()->back()->with('error', 'File upload failed. Error: ' . $file->getErrorString());
         }
     }
-
+                                                            
     /**
      * Delete a material
      *

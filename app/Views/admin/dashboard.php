@@ -57,8 +57,9 @@
         <div class="card-header">Quick Actions</div>
         <div class="card-body d-flex gap-2 flex-wrap">
             <a href="#" class="btn btn-primary disabled">Manage Users</a>
-            <a href="#" class="btn btn-outline-primary disabled">Manage Courses</a>
+            <a href="<?= base_url('admin/courses') ?>" class="btn btn-outline-primary">Manage Courses</a>
             <a href="#" class="btn btn-outline-success" onclick="showCourses()">Course Materials</a>
+            <a href="#" class="btn btn-outline-info" onclick="showUploadOptions()">Upload Files</a>
             <a href="#" class="btn btn-outline-secondary disabled">View Reports</a>
         </div>
     </div>
@@ -67,7 +68,7 @@
 <div class="mt-4" id="courses-section" style="display: none;">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Course Management</h5>
+            <h5 class="mb-0">Course Materials</h5>
             <button class="btn btn-sm btn-outline-secondary" onclick="hideCourses()">
                 <i class="fas fa-times"></i> Close
             </button>
@@ -75,6 +76,22 @@
         <div class="card-body">
             <div class="row" id="courses-list">
                 <!-- Courses will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4" id="upload-section" style="display: none;">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Upload Files</h5>
+            <button class="btn btn-sm btn-outline-secondary" onclick="hideUploadOptions()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row" id="upload-courses-list">
+                <!-- Upload options will be loaded here -->
             </div>
         </div>
     </div>
@@ -119,6 +136,7 @@
 <script>
 function showCourses() {
     document.getElementById('courses-section').style.display = 'block';
+    document.getElementById('upload-section').style.display = 'none';
     loadCourses();
 }
 
@@ -126,23 +144,126 @@ function hideCourses() {
     document.getElementById('courses-section').style.display = 'none';
 }
 
+function showUploadOptions() {
+    document.getElementById('upload-section').style.display = 'block';
+    document.getElementById('courses-section').style.display = 'none';
+    loadUploadCourses();
+}
+
+function hideUploadOptions() {
+    document.getElementById('upload-section').style.display = 'none';
+}
+
 function loadCourses() {
-    // This would typically fetch from an API endpoint
-    // For now, we'll show a placeholder
     const coursesList = document.getElementById('courses-list');
-    coursesList.innerHTML = `
-        <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                Course management functionality would be implemented here.
-                <br><br>
-                <a href="<?= base_url('admin/courses') ?>" class="btn btn-primary btn-sm">
-                    <i class="fas fa-cog me-1"></i>
-                    Manage Courses
-                </a>
+    
+    <?php if (!empty($courses)): ?>
+        coursesList.innerHTML = `
+            <?php foreach ($courses as $course): ?>
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title"><?= esc($course['title']) ?></h6>
+                            <?php if (!empty($course['description'])): ?>
+                                <p class="card-text text-muted small"><?= esc($course['description']) ?></p>
+                            <?php endif; ?>
+                            
+                            <div class="mt-auto">
+                                <div class="d-grid gap-2">
+                                    <a href="<?= base_url('course/' . $course['id'] . '/materials') ?>" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-folder-open me-1"></i>
+                                        View Materials
+                                    </a>
+                                    <a href="<?= base_url('materials/upload/' . $course['id']) ?>" 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-upload me-1"></i>
+                                        Upload Material
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted small">
+                            <i class="fas fa-calendar me-1"></i>
+                            Created: <?= date('M d, Y', strtotime($course['created_at'])) ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        `;
+    <?php else: ?>
+        coursesList.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No courses available yet.
+                    <br><br>
+                    <a href="<?= base_url('admin/courses') ?>" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus me-1"></i>
+                        Create Course
+                    </a>
+                </div>
             </div>
-        </div>
-    `;
+        `;
+    <?php endif; ?>
+}
+
+function loadUploadCourses() {
+    const uploadCoursesList = document.getElementById('upload-courses-list');
+    
+    <?php if (!empty($courses)): ?>
+        uploadCoursesList.innerHTML = `
+            <?php foreach ($courses as $course): ?>
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 border-success">
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title text-success">
+                                <i class="fas fa-graduation-cap me-1"></i>
+                                <?= esc($course['title']) ?>
+                            </h6>
+                            <?php if (!empty($course['description'])): ?>
+                                <p class="card-text text-muted small"><?= esc($course['description']) ?></p>
+                            <?php endif; ?>
+                            
+                            <div class="mt-auto">
+                                <div class="d-grid gap-2">
+                                    <a href="<?= base_url('materials/upload/' . $course['id']) ?>" 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-upload me-1"></i>
+                                        Upload Material
+                                    </a>
+                                    <a href="<?= base_url('course/' . $course['id'] . '/materials') ?>" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>
+                                        View Materials
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted small">
+                            <i class="fas fa-calendar me-1"></i>
+                            Created: <?= date('M d, Y', strtotime($course['created_at'])) ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        `;
+    <?php else: ?>
+        uploadCoursesList.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>No Courses Available</strong>
+                    <br><br>
+                    <p class="mb-3">You need to create courses before you can upload materials.</p>
+                    <a href="<?= base_url('admin/courses') ?>" class="btn btn-warning btn-lg">
+                        <i class="fas fa-plus me-2"></i>
+                        Create Your First Course
+                    </a>
+                </div>
+            </div>
+        `;
+    <?php endif; ?>
 }
 </script>
 

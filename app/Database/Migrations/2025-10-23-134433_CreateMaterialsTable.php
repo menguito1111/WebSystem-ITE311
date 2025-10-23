@@ -31,7 +31,7 @@ class CreateMaterialsTable extends Migration
                 'constraint' => 255,
                 'null' => false,
             ],
-            'created_at' => [
+            'uploaded_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
             ],

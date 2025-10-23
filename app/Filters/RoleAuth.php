@@ -42,32 +42,36 @@ class RoleAuth implements FilterInterface
         switch ($userRole) {
             case 'admin':
                 // Admins can access any route starting with /admin and the unified dashboard
-                if (strpos($path, '/admin') !== 0 && $path !== '/announcements' && $path !== '/dashboard') {
+                if (strpos($path, '/admin') !== 0 && $path !== '/dashboard') {
                     $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                    return redirect()->to('/announcements');
+                    return redirect()->to('/dashboard');
                 }
                 break;
                 
             case 'teacher':
-                // Teachers can access routes starting with /teacher and the unified dashboard
-                if (strpos($path, '/teacher') !== 0 && $path !== '/announcements' && $path !== '/dashboard') {
+                // Teachers can access routes starting with /teacher, /materials, /course, and the unified dashboard
+                if (strpos($path, '/teacher') !== 0 && 
+                    strpos($path, '/materials') !== 0 && 
+                    strpos($path, '/course') !== 0 && 
+                    strpos($path, '/admin') !== 0 && 
+                    $path !== '/dashboard') {
                     $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                    return redirect()->to('/announcements');
+                    return redirect()->to('/dashboard');
                 }
                 break;
                 
             case 'student':
-                // Students can access /student routes, /announcements, and /dashboard
-                if (strpos($path, '/student') !== 0 && $path !== '/announcements' && $path !== '/' && $path !== '/dashboard') {
+                // Students can access /student routes and /dashboard
+                if (strpos($path, '/student') !== 0 && $path !== '/' && $path !== '/dashboard') {
                     $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                    return redirect()->to('/announcements');
+                    return redirect()->to('/dashboard');
                 }
                 break;
                 
             default:
-                // Unknown role, redirect to announcements
+                // Unknown role, redirect to dashboard
                 $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                return redirect()->to('/announcements');
+                return redirect()->to('/dashboard');
         }
     }
 

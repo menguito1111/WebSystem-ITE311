@@ -173,7 +173,7 @@
                                         <i class="fas fa-folder-open me-1"></i>
                                         View Materials
                                     </a>
-                                    <a href="<?= base_url('admin/course/' . $course['id'] . '/upload') ?>" 
+                                    <a href="<?= base_url('materials/upload/' . $course['id']) ?>" 
                                        class="btn btn-sm btn-success">
                                         <i class="fas fa-upload me-1"></i>
                                         Upload

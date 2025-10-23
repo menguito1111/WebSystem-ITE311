@@ -190,13 +190,13 @@ private function handleRoleRegistration($role)
                         
                         switch ($userRole) {
                             case 'student':
-                                return redirect()->to('/announcements');
+                                return redirect()->to('/dashboard');
                             case 'teacher':
                                 return redirect()->to('/dashboard');
                             case 'admin':
                                 return redirect()->to('/dashboard');
                             default:
-                                return redirect()->to('/announcements');
+                                return redirect()->to('/dashboard');
                         }
                         
                     } else {

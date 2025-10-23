@@ -23,6 +23,7 @@
 
         <div class="card-lite">
             <form action="<?= base_url('register') ?>" method="post" class="p-2">
+                <?= csrf_field() ?>
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input type="text" class="form-control" id="name" name="name" required value="<?= esc(old('name')) ?>">

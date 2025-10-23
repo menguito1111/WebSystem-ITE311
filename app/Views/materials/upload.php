@@ -40,8 +40,10 @@
                         </div>
                     <?php endif; ?>
 
-                    <form action="<?= base_url('materials/upload/' . $course_id) ?>" method="post" enctype="multipart/form-data">
+                    <form action="<?= base_url('materials/upload/' . $course_id) ?>" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <!-- Debug: Form action URL: <?= base_url('materials/upload/' . $course_id) ?> -->
                         <?= csrf_field() ?>
+                        <!-- Debug: CSRF Token: <?= csrf_token() ?> -->
                         
                         <div class="mb-3">
                             <label for="material_file" class="form-label">
@@ -86,6 +88,16 @@
 </div>
 
 <script>
+// Form submission debugging
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    console.log('Form submission started');
+    console.log('Form action:', this.action);
+    console.log('Form method:', this.method);
+    console.log('File input value:', document.getElementById('material_file').value);
+    
+    // Don't prevent default - let it submit normally
+});
+
 // File input validation
 document.getElementById('material_file').addEventListener('change', function(e) {
     const file = e.target.files[0];

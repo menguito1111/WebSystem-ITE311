@@ -89,7 +89,7 @@
                                                     </h6>
                                                     <small class="text-muted">
                                                         <i class="fas fa-calendar me-1"></i>
-                                                        <?= date('M d, Y', strtotime($material['created_at'])) ?>
+                                                        <?= date('M d, Y', strtotime($material['uploaded_at'])) ?>
                                                     </small>
                                                 </div>
                                             </div>

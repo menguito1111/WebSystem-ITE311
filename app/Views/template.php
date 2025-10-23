@@ -117,11 +117,6 @@
 				
 				<?php if ($isLoggedIn): ?>
 					<!-- ROLE-SPECIFIC NAVIGATION -->
-					<li class="nav-item">
-						<a class="nav-link <?= uri_string() == 'announcements' ? 'active' : '' ?>" href="<?= site_url('announcements') ?>">
-							<i class="fas fa-bullhorn"></i> Announcements
-						</a>
-					</li>
 					
 					<?php if ($role === 'admin'): ?>
 						<li class="nav-item">
