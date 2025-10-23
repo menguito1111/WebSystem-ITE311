@@ -12,13 +12,13 @@ class MaterialModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = ['course_id', 'file_name', 'file_path', 'created_at'];
+    protected $allowedFields = ['course_id', 'file_name', 'file_path'];
 
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';
-    protected $updatedField = 'updated_at';
+    protected $updatedField = null; // No updated_at field in materials table
     protected $deletedField = 'deleted_at';
 
     // Validation
@@ -50,8 +50,7 @@ class MaterialModel extends Model
      */
     public function insertMaterial($data)
     {
-        // Remove created_at from data since useTimestamps is true
-        unset($data['created_at']);
+        // Don't remove created_at - let the model handle it with useTimestamps
         return $this->insert($data);
     }
 

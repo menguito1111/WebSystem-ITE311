@@ -32,6 +32,14 @@
                         </div>
                     <?php endif; ?>
 
+                    <?php if (session()->getFlashdata('success')): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <?= session()->getFlashdata('success') ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <?php endif; ?>
+
                     <form action="<?= base_url('materials/upload/' . $course_id) ?>" method="post" enctype="multipart/form-data">
                         <?= csrf_field() ?>
                         

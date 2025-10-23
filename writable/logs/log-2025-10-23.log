@@ -91,3 +91,342 @@ DEBUG - 2025-10-23 14:17:11 --> Session: Class initialized using 'CodeIgniter\Se
 DEBUG - 2025-10-23 14:17:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
 DEBUG - 2025-10-23 14:17:29 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
 DEBUG - 2025-10-23 14:18:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:11:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:33:38 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:33:46 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:33:56 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:34:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:34:57 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:52:47 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:54:21 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 15:55:17 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2025-10-23 15:59:56 --> mysqli_sql_exception: Unknown column 'updated_at' in 'field list' in C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `ma...', 0)
+#1 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ma...')
+#2 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ma...')
+#3 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ma...', Array, false)
+#4 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\ITE311-MENGUITO\system\BaseModel.php(838): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(797): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\ITE311-MENGUITO\app\Models\MaterialModel.php(55): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\ITE311-MENGUITO\app\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial(Array)
+#9 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+#10 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+#11 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#13 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#14 C:\xampp\htdocs\ITE311-MENGUITO\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#15 C:\xampp\htdocs\ITE311-MENGUITO\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#16 {main}
+CRITICAL - 2025-10-23 15:59:57 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'updated_at' in 'field list'
+[Method: GET, Route: test-materials]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, :updated_at:)', [...], false)
+ 2 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 3 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 4 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 5 APPPATH\Models\MaterialModel.php(55): CodeIgniter\Model->insert([...])
+ 6 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 15:59:57 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'updated_at' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 15:59:56\', \'2025-10-23 15:59:56\')')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 15:59:56\', \'2025-10-23 15:59:56\')')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, :updated_at:)', [...], false)
+ 4 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 5 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 6 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 7 APPPATH\Models\MaterialModel.php(55): CodeIgniter\Model->insert([...])
+ 8 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+15 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 15:59:57 --> [Caused by] mysqli_sql_exception: Unknown column 'updated_at' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 15:59:56\', \'2025-10-23 15:59:56\')', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 15:59:56\', \'2025-10-23 15:59:56\')')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 15:59:56\', \'2025-10-23 15:59:56\')')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, `updated_at`) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, :updated_at:)', [...], false)
+ 5 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 6 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 7 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 8 APPPATH\Models\MaterialModel.php(55): CodeIgniter\Model->insert([...])
+ 9 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+ERROR - 2025-10-23 16:00:27 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1 in C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `ma...', 0)
+#1 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ma...')
+#2 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ma...')
+#3 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ma...', Array, false)
+#4 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\ITE311-MENGUITO\system\BaseModel.php(838): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(797): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\ITE311-MENGUITO\app\Models\MaterialModel.php(55): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\ITE311-MENGUITO\app\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial(Array)
+#9 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+#10 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+#11 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#13 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#14 C:\xampp\htdocs\ITE311-MENGUITO\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#15 C:\xampp\htdocs\ITE311-MENGUITO\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#16 {main}
+CRITICAL - 2025-10-23 16:00:27 --> CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+[Method: GET, Route: test-materials]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 2 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 3 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 4 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 5 APPPATH\Models\MaterialModel.php(55): CodeIgniter\Model->insert([...])
+ 6 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 16:00:27 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:27\', \'2025-10-23 16:00:27\')')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:27\', \'2025-10-23 16:00:27\')')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 4 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 5 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 6 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 7 APPPATH\Models\MaterialModel.php(55): CodeIgniter\Model->insert([...])
+ 8 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+15 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 16:00:27 --> [Caused by] mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:27\', \'2025-10-23 16:00:27\')', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:27\', \'2025-10-23 16:00:27\')')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:27\', \'2025-10-23 16:00:27\')')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 5 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 6 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 7 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 8 APPPATH\Models\MaterialModel.php(55): CodeIgniter\Model->insert([...])
+ 9 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+ERROR - 2025-10-23 16:00:56 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1 in C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `ma...', 0)
+#1 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ma...')
+#2 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ma...')
+#3 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ma...', Array, false)
+#4 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\ITE311-MENGUITO\system\BaseModel.php(838): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(797): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\ITE311-MENGUITO\app\Models\MaterialModel.php(54): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\ITE311-MENGUITO\app\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial(Array)
+#9 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+#10 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+#11 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#13 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#14 C:\xampp\htdocs\ITE311-MENGUITO\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#15 C:\xampp\htdocs\ITE311-MENGUITO\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#16 {main}
+CRITICAL - 2025-10-23 16:00:56 --> CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+[Method: GET, Route: test-materials]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 2 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 3 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 4 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 5 APPPATH\Models\MaterialModel.php(54): CodeIgniter\Model->insert([...])
+ 6 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 16:00:56 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:56\', \'2025-10-23 16:00:56\')')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:56\', \'2025-10-23 16:00:56\')')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 4 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 5 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 6 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 7 APPPATH\Models\MaterialModel.php(54): CodeIgniter\Model->insert([...])
+ 8 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+15 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 16:00:56 --> [Caused by] mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:56\', \'2025-10-23 16:00:56\')', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:56\', \'2025-10-23 16:00:56\')')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:00:56\', \'2025-10-23 16:00:56\')')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 5 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 6 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 7 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 8 APPPATH\Models\MaterialModel.php(54): CodeIgniter\Model->insert([...])
+ 9 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+ERROR - 2025-10-23 16:01:24 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1 in C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `ma...', 0)
+#1 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `ma...')
+#2 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `ma...')
+#3 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `ma...', Array, false)
+#4 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\ITE311-MENGUITO\system\BaseModel.php(838): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\ITE311-MENGUITO\system\Model.php(797): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\ITE311-MENGUITO\app\Models\MaterialModel.php(54): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\ITE311-MENGUITO\app\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial(Array)
+#9 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+#10 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+#11 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#13 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#14 C:\xampp\htdocs\ITE311-MENGUITO\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#15 C:\xampp\htdocs\ITE311-MENGUITO\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#16 {main}
+CRITICAL - 2025-10-23 16:01:24 --> CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+[Method: GET, Route: test-materials]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 2 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 3 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 4 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 5 APPPATH\Models\MaterialModel.php(54): CodeIgniter\Model->insert([...])
+ 6 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 16:01:24 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:01:24\', \'2025-10-23 16:01:24\')')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:01:24\', \'2025-10-23 16:01:24\')')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 4 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 5 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 6 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 7 APPPATH\Models\MaterialModel.php(54): CodeIgniter\Model->insert([...])
+ 8 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+15 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+CRITICAL - 2025-10-23 16:01:24 --> [Caused by] mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ') VALUES (1, 'test_upload.txt', 'uploads/materials/test_file.txt', '2025-10-2...' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:01:24\', \'2025-10-23 16:01:24\')', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:01:24\', \'2025-10-23 16:01:24\')')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (1, \'test_upload.txt\', \'uploads/materials/test_file.txt\', \'2025-10-23 16:01:24\', \'2025-10-23 16:01:24\')')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `materials` (`course_id`, `file_name`, `file_path`, `created_at`, ) VALUES (:course_id:, :file_name:, :file_path:, :created_at:, ::)', [...], false)
+ 5 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 6 SYSTEMPATH\BaseModel.php(838): CodeIgniter\Model->doInsert([...])
+ 7 SYSTEMPATH\Model.php(797): CodeIgniter\BaseModel->insert([...], true)
+ 8 APPPATH\Models\MaterialModel.php(54): CodeIgniter\Model->insert([...])
+ 9 APPPATH\Controllers\TestMaterials.php(126): App\Models\MaterialModel->insertMaterial([...])
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\TestMaterials->index()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\TestMaterials))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+16 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\ITE311-MENGUITO\\index.php')
+DEBUG - 2025-10-23 16:03:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:03:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:03:42 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:03:52 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:03:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:12:55 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:14:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:14:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:17:55 --> Upload method called for course ID: 1, Method: GET
+DEBUG - 2025-10-23 16:17:55 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:17:55 --> User role: null, Is logged in: no
+INFO - 2025-10-23 16:17:55 --> User not logged in, redirecting to login
+DEBUG - 2025-10-23 16:17:56 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:20:48 --> Upload method called for course ID: 1, Method: POST
+DEBUG - 2025-10-23 16:20:48 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:20:48 --> User role: teacher, Is logged in: yes
+DEBUG - 2025-10-23 16:20:58 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:20:58 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:21:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:21:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:21:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:21:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:21:50 --> Upload method called for course ID: 1, Method: GET
+DEBUG - 2025-10-23 16:21:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:21:50 --> User role: teacher, Is logged in: yes
+INFO - 2025-10-23 16:22:05 --> Upload method called for course ID: 1, Method: POST
+DEBUG - 2025-10-23 16:22:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:22:05 --> User role: teacher, Is logged in: yes
+DEBUG - 2025-10-23 16:22:46 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:22:51 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:52:30 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:52:35 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:52:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:52:55 --> Upload method called for course ID: 1, Method: GET
+DEBUG - 2025-10-23 16:52:55 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:52:55 --> User role: teacher, Is logged in: yes
+INFO - 2025-10-23 16:53:02 --> Upload method called for course ID: 1, Method: POST
+DEBUG - 2025-10-23 16:53:02 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:53:02 --> User role: teacher, Is logged in: yes
+INFO - 2025-10-23 16:53:05 --> Upload method called for course ID: 1, Method: GET
+DEBUG - 2025-10-23 16:53:05 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2025-10-23 16:53:05 --> User role: teacher, Is logged in: yes
+DEBUG - 2025-10-23 16:53:28 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:53:32 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:53:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:53:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:53:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:53:45 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:53:48 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-10-23 16:53:49 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

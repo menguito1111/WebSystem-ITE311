@@ -28,18 +28,32 @@ class Materials extends BaseController
      */
     public function upload($course_id)
     {
+        log_message('info', 'Upload method called for course ID: ' . $course_id . ', Method: ' . $this->request->getMethod());
+        
         // Check if user is admin/instructor
-        if (session()->get('role') !== 'admin' && session()->get('role') !== 'teacher') {
+        $userRole = session()->get('role');
+        $isLoggedIn = session()->get('isLoggedIn');
+        log_message('info', 'User role: ' . ($userRole ?: 'null') . ', Is logged in: ' . ($isLoggedIn ? 'yes' : 'no'));
+        
+        if (!$isLoggedIn) {
+            log_message('info', 'User not logged in, redirecting to login');
+            return redirect()->to('/login')->with('error', 'Please login to upload materials.');
+        }
+        
+        if ($userRole !== 'admin' && $userRole !== 'teacher') {
+            log_message('info', 'Access denied - user role: ' . $userRole);
             return redirect()->to('/')->with('error', 'Access denied. Admin privileges required.');
         }
 
         // Get course information
         $course = $this->courseModel->find($course_id);
         if (!$course) {
+            log_message('error', 'Course not found: ' . $course_id);
             return redirect()->to('/admin/courses')->with('error', 'Course not found.');
         }
 
         if ($this->request->getMethod() === 'post') {
+            log_message('info', 'POST request received, calling handleFileUpload');
             return $this->handleFileUpload($course_id);
         }
 
@@ -61,19 +75,36 @@ class Materials extends BaseController
      */
     private function handleFileUpload($course_id)
     {
+        log_message('info', 'Starting file upload process for course ID: ' . $course_id);
+        
         $validation = \Config\Services::validation();
         $file = $this->request->getFile('material_file');
+
+        log_message('info', 'File received: ' . ($file ? $file->getClientName() : 'No file'));
+
+        // Check if file was uploaded
+        if (!$file || !$file->isValid()) {
+            log_message('error', 'No valid file uploaded. File object: ' . ($file ? 'exists' : 'null'));
+            if ($file) {
+                log_message('error', 'File error: ' . $file->getError() . ' - ' . $file->getErrorString());
+            }
+            return redirect()->back()->withInput()->with('error', 'No valid file was uploaded.');
+        }
 
         // Validation rules
         $rules = [
             'material_file' => 'uploaded[material_file]|max_size[material_file,10240]|ext_in[material_file,pdf,doc,docx,ppt,pptx,txt,jpg,jpeg,png]'
         ];
 
+        log_message('info', 'Validating file with rules: ' . print_r($rules, true));
+        
         if (!$this->validate($rules)) {
             $errors = $validation->getErrors();
             log_message('error', 'File upload validation failed: ' . print_r($errors, true));
             return redirect()->back()->withInput()->with('errors', $errors);
         }
+        
+        log_message('info', 'File validation passed');
 
         if ($file->isValid() && !$file->hasMoved()) {
             // Create uploads directory if it doesn't exist
@@ -99,7 +130,10 @@ class Materials extends BaseController
                 log_message('info', 'Attempting to save material to database: ' . print_r($data, true));
 
                 // Save to database
+                log_message('info', 'Attempting database insert with data: ' . print_r($data, true));
                 $insertResult = $this->materialModel->insertMaterial($data);
+                log_message('info', 'Database insert result: ' . ($insertResult ? $insertResult : 'false'));
+                
                 if ($insertResult) {
                     log_message('info', 'Material saved successfully with ID: ' . $insertResult);
                     // Redirect based on user role
@@ -114,6 +148,7 @@ class Materials extends BaseController
                     $dbErrors = $this->materialModel->errors();
                     log_message('error', 'Database insert failed: ' . print_r($dbErrors, true));
                     log_message('error', 'Data being inserted: ' . print_r($data, true));
+                    log_message('error', 'Model errors: ' . print_r($this->materialModel->errors(), true));
                     return redirect()->back()->with('error', 'Failed to save material information. ' . implode(', ', $dbErrors));
                 }
             } else {
@@ -169,7 +204,7 @@ class Materials extends BaseController
     {
         // Check if user is logged in
         if (!session()->get('isLoggedIn')) {
-            return redirect()->to('/auth/login')->with('error', 'Please login to download materials.');
+            return redirect()->to('/login')->with('error', 'Please login to download materials.');
         }
 
         $material = $this->materialModel->getMaterialById($material_id);
@@ -207,7 +242,7 @@ class Materials extends BaseController
     {
         // Check if user is logged in
         if (!session()->get('isLoggedIn')) {
-            return redirect()->to('/auth/login')->with('error', 'Please login to view materials.');
+            return redirect()->to('/login')->with('error', 'Please login to view materials.');
         }
 
         // Get course information
