@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use CodeIgniter\Controller;
 use App\Models\UserModel;
+use App\Models\CourseModel;
 
 class Admin extends Controller
 {
@@ -51,6 +52,31 @@ class Admin extends Controller
         ];
 
         return view('admin/dashboard', $data);
+    }
+
+    public function courses()
+    {
+        $session = session();
+
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('login');
+        }
+
+        $role = strtolower((string) $session->get('role'));
+        if ($role !== 'admin' && $role !== 'instructor') {
+            $session->setFlashdata('error', 'Unauthorized access to admin area.');
+            return redirect()->to('dashboard');
+        }
+
+        $courseModel = new CourseModel();
+        $courses = $courseModel->findAll();
+
+        $data = [
+            'title' => 'Course Management',
+            'courses' => $courses
+        ];
+
+        return view('admin/courses', $data);
     }
 }
 

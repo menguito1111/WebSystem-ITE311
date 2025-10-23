@@ -49,6 +49,13 @@
 											<small class="text-muted d-block"><?= esc($course['description']) ?></small>
 										<?php endif; ?>
 									</span>
+									<div class="btn-group" role="group">
+										<a href="<?= base_url('course/' . $course['id'] . '/materials') ?>" 
+										   class="btn btn-sm btn-outline-primary">
+											<i class="fas fa-folder-open me-1"></i>
+											Materials
+										</a>
+									</div>
 								</li>
 							<?php endforeach; ?>
 						</ul>
