@@ -13,6 +13,8 @@
 	<!-- Bootstrap CDN -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<!-- Font Awesome for Icons -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<style>
@@ -181,6 +183,21 @@
 
 			<ul class="navbar-nav">
 				<?php if ($isLoggedIn): ?>
+					<!-- Notifications Dropdown -->
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="fas fa-bell"></i>
+							<span id="notificationBadge" class="badge bg-danger" style="display: none;"></span>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end" id="notificationsList" style="min-width: 300px;">
+							<li><h6 class="dropdown-header">Notifications</h6></li>
+							<li><div class="text-center p-2"><small class="text-muted">Loading...</small></div></li>
+							<li><hr class="dropdown-divider"></li>
+							<li><a class="dropdown-item text-center" href="#">View All</a></li>
+						</ul>
+					</li>
+
+					<!-- User Dropdown -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
 							<i class="fas fa-user"></i>
@@ -217,5 +234,90 @@
 	</div>
 </div>
 
+<script>
+$(document).ready(function() {
+    // Function to fetch notifications
+    function fetchNotifications() {
+        $.ajax({
+            url: '<?= base_url('notifications') ?>',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                updateNotificationBadge(data.unreadCount);
+                updateNotificationDropdown(data.notifications);
+            },
+            error: function() {
+                console.log('Error fetching notifications');
+            }
+        });
+    }
+
+    // Function to update notification badge
+    function updateNotificationBadge(count) {
+        const badge = $('#notificationBadge');
+        if (count > 0) {
+            badge.text(count).show();
+        } else {
+            badge.hide();
+        }
+    }
+
+    // Function to update notification dropdown
+    function updateNotificationDropdown(notifications) {
+        const list = $('#notificationsList');
+        const items = list.find('li:not(.dropdown-header):not(:last-child)');
+
+        // Remove existing notification items
+        items.slice(1, -1).remove();
+
+        if (notifications.length > 0) {
+            notifications.forEach(function(notification) {
+                const item = `
+                    <li>
+                        <a class="dropdown-item d-flex justify-content-between align-items-start" href="#" data-id="${notification.id}">
+                            <div class="me-2">
+                                <small>${notification.message}</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary mark-read-btn" data-id="${notification.id}">Mark Read</button>
+                        </a>
+                    </li>
+                `;
+                list.find('li').last().before(item);
+            });
+        } else {
+            const noNotifications = '<li><div class="text-center p-2"><small class="text-muted">No new notifications</small></div></li>';
+            list.find('li').last().before(noNotifications);
+        }
+    }
+
+    // Handle mark as read
+    $(document).on('click', '.mark-read-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const notificationId = $(this).data('id');
+
+        $.ajax({
+            url: '<?= base_url('notifications/mark_read/') ?>' + notificationId,
+            method: 'POST',
+            dataType: 'json',
+            success: function(data) {
+                if (data.success) {
+                    fetchNotifications(); // Refresh notifications
+                }
+            },
+            error: function() {
+                console.log('Error marking notification as read');
+            }
+        });
+    });
+
+    // Fetch notifications on page load
+    fetchNotifications();
+
+    // Refresh notifications every 60 seconds
+    setInterval(fetchNotifications, 60000);
+});
+</script>
 </body>
 </html>
