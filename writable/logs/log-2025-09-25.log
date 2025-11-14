@@ -1,125 +1,26 @@
-DEBUG - 2025-09-25 20:44:27 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:46:43 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:47:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:47:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:47:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:47:14 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:47:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:27 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:27 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:45 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 20:50:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 21:05:46 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 21:05:49 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-DEBUG - 2025-09-25 21:06:08 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-INFO - 2025-09-25 21:06:08 --> Registration POST request received
-INFO - 2025-09-25 21:06:08 --> POST data: Array
-(
-    [name] => benz
-    [email] => benzcarllozada123@gmail.com
-    [role] => student
-    [password] => pass
-    [password_confirm] => pass
-)
-
-ERROR - 2025-09-25 21:06:12 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php:201
-Stack trace:
-#0 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'lms_menguito', 3306, '', 0)
-#1 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#2 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#3 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT 1\nFROM `...', Array, false)
-#4 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\Rules.php(175): CodeIgniter\Database\BaseBuilder->get()
-#5 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\StrictRules\Rules.php(187): CodeIgniter\Validation\Rules->is_unique('benzcarllozada1...', 'users.email', Array)
-#6 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\Validation.php(336): CodeIgniter\Validation\StrictRules\Rules->is_unique('benzcarllozada1...', 'users.email', Array, NULL, 'email')
-#7 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\Validation.php(201): CodeIgniter\Validation\Validation->processRules('email', 'email', 'benzcarllozada1...', Array, Array, 'email')
-#8 C:\xampp\htdocs\ITE311-MENGUITO\system\Controller.php(138): CodeIgniter\Validation\Validation->run()
-#9 C:\xampp\htdocs\ITE311-MENGUITO\app\Controllers\Auth.php(27): CodeIgniter\Controller->validate(Array)
-#10 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(933): App\Controllers\Auth->register()
-#11 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Auth))
-#12 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#13 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#14 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#15 C:\xampp\htdocs\ITE311-MENGUITO\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#16 {main}
-
-Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\ITE311-MENGUITO\system\Database\MySQLi\Connection.php:246
-Stack trace:
-#0 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#1 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#2 C:\xampp\htdocs\ITE311-MENGUITO\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT 1\nFROM `...', Array, false)
-#3 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\Rules.php(175): CodeIgniter\Database\BaseBuilder->get()
-#4 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\StrictRules\Rules.php(187): CodeIgniter\Validation\Rules->is_unique('benzcarllozada1...', 'users.email', Array)
-#5 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\Validation.php(336): CodeIgniter\Validation\StrictRules\Rules->is_unique('benzcarllozada1...', 'users.email', Array, NULL, 'email')
-#6 C:\xampp\htdocs\ITE311-MENGUITO\system\Validation\Validation.php(201): CodeIgniter\Validation\Validation->processRules('email', 'email', 'benzcarllozada1...', Array, Array, 'email')
-#7 C:\xampp\htdocs\ITE311-MENGUITO\system\Controller.php(138): CodeIgniter\Validation\Validation->run()
-#8 C:\xampp\htdocs\ITE311-MENGUITO\app\Controllers\Auth.php(27): CodeIgniter\Controller->validate(Array)
-#9 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(933): App\Controllers\Auth->register()
-#10 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Auth))
-#11 C:\xampp\htdocs\ITE311-MENGUITO\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#12 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#13 C:\xampp\htdocs\ITE311-MENGUITO\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#14 C:\xampp\htdocs\ITE311-MENGUITO\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#15 {main}
-CRITICAL - 2025-09-25 21:06:12 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
-Main connection [MySQLi]: No connection could be made because the target machine actively refused it
-[Method: POST, Route: register]
-in SYSTEMPATH\Database\BaseConnection.php on line 465.
- 1 SYSTEMPATH\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
- 2 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT 1
-FROM `users`
-WHERE `email` = :email:
- LIMIT 1', [...], false)
- 3 SYSTEMPATH\Validation\Rules.php(175): CodeIgniter\Database\BaseBuilder->get()
- 4 SYSTEMPATH\Validation\StrictRules\Rules.php(187): CodeIgniter\Validation\Rules->is_unique('benzcarllozada123@gmail.com', 'users.email', [...])
- 5 SYSTEMPATH\Validation\Validation.php(336): CodeIgniter\Validation\StrictRules\Rules->is_unique('benzcarllozada123@gmail.com', 'users.email', [...], null, 'email')
- 6 SYSTEMPATH\Validation\Validation.php(201): CodeIgniter\Validation\Validation->processRules('email', 'email', 'benzcarllozada123@gmail.com', [...], [...], 'email')
- 7 SYSTEMPATH\Controller.php(138): CodeIgniter\Validation\Validation->run()
- 8 APPPATH\Controllers\Auth.php(27): CodeIgniter\Controller->validate([...])
- 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Auth->register()
-10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Auth))
-11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
-12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
-13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-DEBUG - 2025-09-25 21:07:51 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-INFO - 2025-09-25 21:07:51 --> Registration POST request received
-INFO - 2025-09-25 21:07:51 --> POST data: Array
-(
-    [name] => benz
-    [email] => benzcarllozada123@gmail.com
-    [role] => student
-    [password] => pass
-    [password_confirm] => pass
-)
-
-ERROR - 2025-09-25 21:07:51 --> Validation failed: Array
-(
-    [password] => The password field must be at least 6 characters in length.
-)
-
-DEBUG - 2025-09-25 21:08:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
-INFO - 2025-09-25 21:08:20 --> Registration POST request received
-INFO - 2025-09-25 21:08:20 --> POST data: Array
-(
-    [name] => Benz
-    [email] => benzcarllozada123@gmail.com
-    [role] => student
-    [password] => benz12345
-    [password_confirm] => benz12345
-)
-
-INFO - 2025-09-25 21:08:20 --> Validation passed
-INFO - 2025-09-25 21:08:20 --> Attempting to insert user data: Array
-(
-    [name] => Benz
-    [email] => benzcarllozada123@gmail.com
-    [password] => benz12345
-    [role] => student
-)
-
-INFO - 2025-09-25 21:08:20 --> User inserted successfully with ID: 6
-DEBUG - 2025-09-25 21:08:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-09-25 17:49:54 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "design/template.php"
+[Method: GET, Route: dashboard]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('design/template.php')
+ 2 SYSTEMPATH\View\View.php(242): CodeIgniter\View\View->render('design/template', [], true)
+ 3 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('auth/dashboard', [], true)
+ 4 APPPATH\Controllers\Auth.php(130): view('auth/dashboard', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Auth->dashboard()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Auth))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-09-25 17:50:30 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "design/template.php"
+[Method: GET, Route: dashboard]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('design/template.php')
+ 2 SYSTEMPATH\View\View.php(242): CodeIgniter\View\View->render('design/template', [], true)
+ 3 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('auth/dashboard', [], true)
+ 4 APPPATH\Controllers\Auth.php(130): view('auth/dashboard', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Auth->dashboard()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Auth))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

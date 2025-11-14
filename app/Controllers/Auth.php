@@ -1,327 +1,219 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\UserModel;
-use CodeIgniter\Controller;
 
-class Auth extends Controller
+class Auth extends BaseController
 {
-public function register()
-{
-    helper(['form']);
-    $session = session();
-    $model = new UserModel();
-    
-    if ($this->request->getMethod() === 'POST') {
-        log_message('info', 'Registration POST request received');
-        log_message('info', 'POST data: ' . print_r($this->request->getPost(), true));
-        
-        $rules = [
-            'name' => 'required|min_length[3]|max_length[100]',
-            'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length[6]',
-            'password_confirm' => 'matches[password]',
-            'role' => 'required|in_list[student,teacher]'  // *** ADD THIS LINE ***
-        ];
-        
-        if ($this->validate($rules)) {
-            log_message('info', 'Validation passed');
-            
-            try {
-                $name = trim($this->request->getPost('name'));
-                $email = $this->request->getPost('email');
-                $role = $this->request->getPost('role'); // *** ADD THIS LINE ***
-                
-                $data = [
-                    'name' => $name,
-                    'email' => $email,
-                    'password' => $this->request->getPost('password'),
-                    'role' => $role  // *** CHANGE THIS FROM 'student' TO $role ***
-                ];
-                
-                log_message('info', 'Attempting to insert user data: ' . print_r($data, true));
-                
-                $insertResult = $model->insert($data);
-                
-                if ($insertResult) {
-                    log_message('info', 'User inserted successfully with ID: ' . $insertResult);
-                    // *** UPDATE SUCCESS MESSAGE TO INCLUDE ROLE ***
-                    $session->setFlashdata('register_success', 'Registration successful as ' . ucfirst($role) . '. Please login.');
-                    return redirect()->to(base_url('login'));
-                } else {
-                    $errors = $model->errors();
-                    $errorMessage = 'Registration failed. ';
-                    
-                    log_message('error', 'Model insert failed. Errors: ' . print_r($errors, true));
-                    log_message('error', 'Model validation errors: ' . print_r($model->getValidationMessages(), true));
-                    
-                    if (!empty($errors)) {
-                        $errorMessage .= implode(', ', $errors);
-                    } else {
-                        $errorMessage .= 'Please try again.';
-                    }
-                    $session->setFlashdata('register_error', $errorMessage);
-                }
-            } catch (\Exception $e) {
-                log_message('error', 'Registration exception: ' . $e->getMessage());
-                log_message('error', 'Stack trace: ' . $e->getTraceAsString());
-                $session->setFlashdata('register_error', 'Registration failed. Please try again. Error: ' . $e->getMessage());
-            }
-        } else {
-            $validationErrors = $this->validator->getErrors();
-            log_message('error', 'Validation failed: ' . print_r($validationErrors, true));
-            
-            $errorMessage = 'Validation failed: ' . implode(', ', $validationErrors);
-            $session->setFlashdata('register_error', $errorMessage);
-        }
-    }
-    
-    return view('auth/register', [
-        'validation' => $this->validator
-    ]);
-}
-public function registerChoice()
-{
-    // Show the registration type selection page
-    return view('auth/register_choice');
-}
-
-public function registerStudent()
-{
-    return $this->handleRoleRegistration('student');
-}
-
-public function registerTeacher()
-{
-    return $this->handleRoleRegistration('teacher');
-}
-
-private function handleRoleRegistration($role)
-{
-    helper(['form']);
-    $session = session();
-    $model = new UserModel();
-    
-    if ($this->request->getMethod() === 'POST') {
-        $rules = [
-            'name' => 'required|min_length[3]|max_length[100]',
-            'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length[6]',
-            'password_confirm' => 'matches[password]'
-        ];
-        
-        if ($this->validate($rules)) {
-            try {
-                $data = [
-                    'name' => trim($this->request->getPost('name')),
-                    'email' => $this->request->getPost('email'),
-                    'password' => $this->request->getPost('password'),
-                    'role' => $role  // *** ROLE IS SET BY URL PARAMETER ***
-                ];
-                
-                $insertResult = $model->insert($data);
-                
-                if ($insertResult) {
-                    $session->setFlashdata('register_success', 'Registration successful as ' . ucfirst($role) . '. Please login.');
-                    return redirect()->to(base_url('login'));
-                } else {
-                    $session->setFlashdata('register_error', 'Registration failed. Please try again.');
-                }
-            } catch (\Exception $e) {
-                $session->setFlashdata('register_error', 'Registration failed. Error: ' . $e->getMessage());
-            }
-        } else {
-            $session->setFlashdata('register_error', 'Validation failed: ' . implode(', ', $this->validator->getErrors()));
-        }
-    }
-    
-    // Load role-specific registration form
-    return view('auth/register_' . $role, [
-        'validation' => $this->validator,
-        'role' => $role
-    ]);
-}
-
-
-
-
-
     public function login()
     {
-        helper(['form']);
-        $session = session();
-        
-        if ($this->request->getMethod() === 'POST') {
-            $rules = [
-                'email' => 'required|valid_email',
-                'password' => 'required'
-            ];
-            
-            if ($this->validate($rules)) {
-                $email = $this->request->getPost('email');
-                $password = $this->request->getPost('password');
-                
-                try {
-                    $model = new UserModel();
-                    
-                    // Find user by email only
-                    $user = $model->where('email', $email)->first();
-                    
-                    if ($user && password_verify($password, $user['password'])) {
-                        $userName = $user['name'] ?? $user['email'];
-                        
-                        // Set session data
-                        $sessionData = [
-                            'user_id' => $user['id'],
-                            'user_name' => $userName,
-                            'user_email' => $user['email'],
-                            'role' => $user['role'] ?? 'student',
-                            'isLoggedIn' => true
-                        ];
-                        
-                        // Prevent session fixation
-                        $session->regenerate();
-                        $session->set($sessionData);
-                        $session->setFlashdata('success', 'Welcome, ' . $userName . '!');
+        // If already logged in
+        if (session()->get('isAuthenticated')) {
+            return redirect()->to('/dashboard');
+        }
 
-                        // *** STEP 2: ROLE-BASED REDIRECT ***
-                        // Redirect users based on their role
-                        $userRole = $user['role'] ?? 'student';
-                        
-                        switch ($userRole) {
-                            case 'student':
-                                return redirect()->to('/dashboard');
-                            case 'teacher':
-                                return redirect()->to('/dashboard');
-                            case 'admin':
-                                return redirect()->to('/dashboard');
-                            default:
-                                return redirect()->to('/dashboard');
-                        }
-                        
-                    } else {
-                        $session->setFlashdata('login_error', 'Invalid email or password.');
-                    }
-                } catch (\Exception $e) {
-                    log_message('error', 'Login exception: ' . $e->getMessage());
-                    $session->setFlashdata('login_error', 'Login failed. Please try again.');
-                }
-            } else {
-                $session->setFlashdata('login_error', 'Please check your input and try again.');
+        // Handle POST (form submit)
+        if ($this->request->getMethod() === 'POST') {
+            $userEmail = $this->request->getPost('email');
+            $userPassword = $this->request->getPost('password');
+
+            if (empty($userEmail) || empty($userPassword)) {
+                return redirect()->back()->with('login_error', 'Please provide both email and password.');
+            }
+
+            $userModel = new UserModel();
+            $userRecord = $userModel->where('email', $userEmail)->first();
+
+            if (!$userRecord) {
+                return redirect()->back()->with('login_error', 'No account found with email: ' . $userEmail);
+            }
+
+            if (!password_verify($userPassword, $userRecord['password'])) {
+                return redirect()->back()->with('login_error', 'Incorrect password.');
+            }
+
+            // Save session
+            $userSession = [
+                'userId'          => $userRecord['id'],
+                'userName'        => $userRecord['name'],
+                'userEmail'       => $userRecord['email'],
+                'userRole'        => $userRecord['role'],
+                'isAuthenticated' => true
+            ];
+
+            session()->set($userSession);
+
+            // Role-based redirection after successful login
+            switch ($userRecord['role']) {
+                case 'student':
+                    return redirect()->to('/announcements')->with('success', 'Welcome back, ' . $userRecord['name'] . '!');
+                case 'teacher':
+                    return redirect()->to('/dashboard')->with('success', 'Welcome back, ' . $userRecord['name'] . '!');
+                case 'admin':
+                    return redirect()->to('/dashboard')->with('success', 'Welcome back, ' . $userRecord['name'] . '!');
+                default:
+                    return redirect()->to('/dashboard')->with('success', 'Welcome back, ' . $userRecord['name'] . '!');
             }
         }
-        
-        return view('auth/login', [
-            'validation' => $this->validator
-        ]);
+
+        // GET request: Show login form
+        return view('login', $this->data);
     }
 
     public function logout()
     {
-        $session = session();
-        $session->destroy();
-        return redirect()->to('login');
+        session()->destroy();
+        return redirect()->to('/login')->with('success', 'You have been logged out.');
     }
 
-    // *** STEP 3: ENHANCED DASHBOARD METHOD ***
+    public function register()
+    {
+        if (session()->get('isAuthenticated')) {
+            return redirect()->to('/dashboard');
+        }
+
+        if ($this->request->getMethod() === 'POST') {
+            $fullName       = trim((string) $this->request->getPost('name'));
+            $emailAddress   = trim((string) $this->request->getPost('email'));
+            $newPassword    = (string) $this->request->getPost('password');
+            $confirmPassword = (string) $this->request->getPost('password_confirm');
+
+            if ($fullName === '' || $emailAddress === '' || $newPassword === '' || $confirmPassword === '') {
+                return redirect()->back()->withInput()->with('register_error', 'All fields must be completed.');
+            }
+
+            if (!filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
+                return redirect()->back()->withInput()->with('register_error', 'Please enter a valid email address.');
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                return redirect()->back()->withInput()->with('register_error', 'Passwords do not match.');
+            }
+
+            $userModel = new UserModel();
+
+            if ($userModel->where('email', $emailAddress)->first()) {
+                return redirect()->back()->withInput()->with('register_error', 'This email is already in use.');
+            }
+
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+            $newUserId = $userModel->insert([
+                'name'     => $fullName,
+                'email'    => $emailAddress,
+                'role'     => 'student',
+                'password' => $hashedPassword,
+            ], true);
+
+            if (!$newUserId) {
+                return redirect()->back()->withInput()->with('register_error', 'Account creation failed. Please try again.');
+            }
+
+            return redirect()->to('/login')->with('register_success', 'Registration successful. Please log in.');
+        }
+
+        return view('register', $this->data);
+    }
+
     public function dashboard()
     {
-        $session = session();
-        
-        // Authorization check - ensure user is logged in
-        if (!$session->get('isLoggedIn')) {
-            $session->setFlashdata('login_error', 'Please login to access the dashboard.');
-            return redirect()->to('login');
+        // Enhanced authorization check
+        if (!session()->get('isAuthenticated')) {
+            return redirect()->to('/login')->with('error', 'Please login first.');
         }
-        
-        // Get user role and basic info
-        $userRole = $session->get('role');
-        $userId = $session->get('user_id');
-        
-        // Base data for all users
+
+        // Get user session data
+        $role = session()->get('userRole');
+        $userName = session()->get('userName');
+        $userId = session()->get('userId');
+        $userEmail = session()->get('userEmail');
+
+        // Validate role
+        if (!in_array($role, ['admin', 'teacher', 'student'])) {
+            return redirect()->to('/login')->with('error', 'Invalid user role. Please contact administrator.');
+        }
+
+        // Base data for all roles
         $data = [
-            'user_name' => $session->get('user_name'),
-            'user_email' => $session->get('user_email'),
-            'user_role' => $userRole,
-            'title' => ucfirst($userRole) . ' Dashboard'
+            'title' => 'Dashboard',
+            'role' => $role,
+            'userName' => $userName,
+            'userEmail' => $userEmail,
+            'userId' => $userId,
+            'unreadCount' => $this->data['unreadCount'] ?? 0,
         ];
-        
-        // Fetch role-specific data from database
-        $userModel = new UserModel();
-        
-        switch ($userRole) {
+
+        // Role-specific data fetching
+        switch ($role) {
             case 'admin':
-                // Admin-specific data
-                $data['total_users'] = $userModel->countAllResults();
-                $data['total_admins'] = $userModel->where('role', 'admin')->countAllResults();
-                $data['total_teachers'] = $userModel->where('role', 'teacher')->countAllResults();
-                $data['total_students'] = $userModel->where('role', 'student')->countAllResults();
+                $userModel = new UserModel();
+                $courseModel = new \App\Models\CourseModel();
+                $enrollmentModel = new \App\Models\EnrollmentModel();
                 
-                // Get courses count (with error handling if table doesn't exist)
-                $db = \Config\Database::connect();
-                try {
-                    $data['total_courses'] = $db->table('courses')->countAllResults();
-                } catch (\Throwable $e) {
-                    $data['total_courses'] = 0;
-                }
+                // Admin dashboard data
+                $data['users'] = $userModel->findAll();
+                $data['totalUsers'] = count($data['users']);
+                $data['totalCourses'] = $courseModel->countAll();
+                $data['totalEnrollments'] = $enrollmentModel->countAll();
                 
-                // Recent users for admin
-                $data['recent_users'] = $userModel->orderBy('created_at', 'DESC')->limit(5)->find();
+                // Get user statistics by role
+                $data['adminCount'] = $userModel->where('role', 'admin')->countAllResults();
+                $data['teacherCount'] = $userModel->where('role', 'teacher')->countAllResults();
+                $data['studentCount'] = $userModel->where('role', 'student')->countAllResults();
+                
+                // Recent enrollments
+                $data['recentEnrollments'] = $enrollmentModel->select('enrollments.*, users.name as student_name, courses.course_name')
+                    ->join('users', 'users.id = enrollments.user_id', 'left')
+                    ->join('courses', 'courses.course_id = enrollments.course_id', 'left')
+                    ->orderBy('enrollments.enrollment_date', 'DESC')
+                    ->limit(5)
+                    ->findAll();
                 break;
-                
+
             case 'teacher':
-                // Teacher-specific data
-                try {
-                    $db = \Config\Database::connect();
-                    // Since courses table has no teacher_id yet, show all courses
-                    $myCourses = $db->table('courses')->orderBy('id', 'ASC')->get()->getResultArray();
-                    $data['my_courses'] = $myCourses;
+                $courseModel = new \App\Models\CourseModel();
+                $enrollmentModel = new \App\Models\EnrollmentModel();
 
-                    // Total students across all courses (simple aggregate)
-                    try {
-                        $data['total_students_in_courses'] = $db->table('enrollments')->countAllResults();
-                    } catch (\Throwable $e) {
-                        $data['total_students_in_courses'] = 0;
-                    }
-                } catch (\Throwable $e) {
-                    $data['my_courses'] = [];
-                    $data['total_students_in_courses'] = 0;
-                }
+                // Teacher dashboard data - now filter by teacher's courses
+                $data['myCourses'] = $courseModel->getCoursesByTeacher($userId);
+                $data['totalMyCourses'] = count($data['myCourses']);
+
+                // Get total students enrolled in teacher's courses
+                $teacherEnrollments = $courseModel->getTeacherCourseEnrollments($userId);
+                $data['totalStudents'] = count(array_unique(array_column($teacherEnrollments, 'user_id')));
+
+                // Recent enrollments in teacher's courses only
+                $data['recentEnrollments'] = array_slice($teacherEnrollments, 0, 5);
                 break;
-                
+
             case 'student':
-                try {
-                    $db = \Config\Database::connect();
-                    // Enrolled courses
-                    $enrolled = $db->table('enrollments e')
-                        ->select('c.*')
-                        ->join('courses c', 'c.id = e.course_id', 'inner')
-                        ->where('e.user_id', $userId)
-                        ->orderBy('c.id', 'ASC')
-                        ->get()
-                        ->getResultArray();
+                $enrollmentModel = new \App\Models\EnrollmentModel();
+                $courseModel = new \App\Models\CourseModel();
+                $materialModel = new \App\Models\MaterialModel();
 
-                    // Available courses (not enrolled)
-                    $enrolledIds = array_map(function($c){ return $c['id'] ?? 0; }, $enrolled);
-                    if (empty($enrolledIds)) {
-                        $available = $db->table('courses')->orderBy('id','ASC')->get()->getResultArray();
-                    } else {
-                        $available = $db->table('courses')->whereNotIn('id', $enrolledIds)->orderBy('id','ASC')->get()->getResultArray();
-                    }
+                // Student dashboard data
+                $data['enrolledCourses'] = $enrollmentModel->getUserEnrollments($userId);
+                $data['availableCourses'] = $courseModel->getAvailableCourses($userId);
+                $data['totalEnrolled'] = count($data['enrolledCourses']);
+                $data['totalAvailable'] = count($data['availableCourses']);
 
-                    $data['enrolled_courses'] = $enrolled;
-                    $data['available_courses'] = $available;
-                    $data['recent_grades'] = [];
-                } catch (\Throwable $e) {
-                    $data['enrolled_courses'] = [];
-                    $data['available_courses'] = [];
-                    $data['recent_grades'] = [];
+                // Add materials to enrolled courses
+                foreach ($data['enrolledCourses'] as &$course) {
+                    $course['materials'] = $materialModel->getMaterialsByCourse($course['course_id']);
                 }
+
+                // Get recent activity (enrollments)
+                $data['recentActivity'] = $enrollmentModel->select('enrollments.*, courses.course_name, courses.course_code')
+                    ->join('courses', 'courses.course_id = enrollments.course_id', 'left')
+                    ->where('enrollments.user_id', $userId)
+                    ->orderBy('enrollments.enrollment_date', 'DESC')
+                    ->limit(3)
+                    ->findAll();
                 break;
         }
-        
-        // *** STEP 4: LOAD UNIFIED DASHBOARD VIEW ***
+
         return view('auth/dashboard', $data);
     }
+
 }
-?>

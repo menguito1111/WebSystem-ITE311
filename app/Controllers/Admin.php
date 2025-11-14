@@ -1,88 +1,49 @@
 <?php
+
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
-use App\Models\UserModel;
-use App\Models\CourseModel;
-
-class Admin extends Controller
+class Admin extends BaseController
 {
+    /**
+     * Admin Dashboard
+     * Redirects to unified dashboard with admin-specific functionality
+     */
     public function dashboard()
     {
-        $session = session();
-
-        if (!$session->get('isLoggedIn')) {
-            return redirect()->to('login');
-        }
-
-        $role = strtolower((string) $session->get('role'));
-        if ($role !== 'admin' && $role !== 'teacher') {
-            // Prevent access for non-admins and non-teachers
-            $session->setFlashdata('error', 'Unauthorized access to admin area.');
-            return redirect()->to('dashboard');
-        }
-
-        // Example admin data: totals
-        $userModel = new UserModel();
-        $totalUsers = $userModel->countAllResults();
-        $totalAdmins = $userModel->where('role', 'admin')->countAllResults();
-        $totalTeachers = $userModel->where('role', 'teacher')->countAllResults();
-        $totalStudents = $userModel->where('role', 'student')->countAllResults();
-
-        // Total courses (if courses table exists)
-        $db = \Config\Database::connect();
-        $totalCourses = 0;
-        try {
-            $totalCourses = $db->table('courses')->countAllResults();
-        } catch (\Throwable $e) {
-            $totalCourses = 0;
-        }
-
-        // Recent activity: latest users as a simple placeholder
-        $recentUsers = $userModel->orderBy('created_at', 'DESC')->limit(5)->find();
-
-        // Get courses for dashboard display
-        $courseModel = new CourseModel();
-        $courses = $courseModel->orderBy('created_at', 'DESC')->limit(6)->find();
-
-        $data = [
-            'title' => 'Admin Dashboard',
-            'totalUsers' => $totalUsers,
-            'totalAdmins' => $totalAdmins,
-            'totalTeachers' => $totalTeachers,
-            'totalStudents' => $totalStudents,
-            'totalCourses' => $totalCourses,
-            'recentUsers' => $recentUsers,
-            'courses' => $courses,
-        ];
-
-        return view('admin/dashboard', $data);
+        // Redirect to unified dashboard - it will automatically show admin content
+        return redirect()->to('/dashboard');
     }
 
-    public function courses()
+    public function manageUsers()
     {
-        $session = session();
+        // Role-based access control is handled by the RoleAuth filter
+        return view('admin/manage_users', [
+            'title' => 'Manage Users',
+            'userName' => session()->get('userName'),
+            'userEmail' => session()->get('userEmail'),
+            'userRole' => session()->get('userRole')
+        ]);
+    }
 
-        if (!$session->get('isLoggedIn')) {
-            return redirect()->to('login');
-        }
+    public function reports()
+    {
+        // Role-based access control is handled by the RoleAuth filter
+        return view('admin/reports', [
+            'title' => 'Reports',
+            'userName' => session()->get('userName'),
+            'userEmail' => session()->get('userEmail'),
+            'userRole' => session()->get('userRole')
+        ]);
+    }
 
-        $role = strtolower((string) $session->get('role'));
-        if ($role !== 'admin' && $role !== 'teacher') {
-            $session->setFlashdata('error', 'Unauthorized access to admin area.');
-            return redirect()->to('dashboard');
-        }
-
-        $courseModel = new CourseModel();
-        $courses = $courseModel->findAll();
-
-        $data = [
-            'title' => 'Course Management',
-            'courses' => $courses
-        ];
-
-        return view('admin/courses', $data);
+    public function settings()
+    {
+        // Role-based access control is handled by the RoleAuth filter
+        return view('admin/settings', [
+            'title' => 'Settings',
+            'userName' => session()->get('userName'),
+            'userEmail' => session()->get('userEmail'),
+            'userRole' => session()->get('userRole')
+        ]);
     }
 }
-
-

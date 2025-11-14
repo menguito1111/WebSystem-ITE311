@@ -21,57 +21,52 @@ class RoleAuth implements FilterInterface
      * @param RequestInterface $request
      * @param array|null       $arguments
      *
-     * @return RequestInterface|ResponseInterface|string|void
+     * @return mixed
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $session = session();
-        
-        // Check if user is logged in
-        if (!$session->get('isLoggedIn')) {
-            $session->setFlashdata('login_error', 'Please login to access this page.');
-            return redirect()->to('login');
+        // Check if user is authenticated
+        if (!session()->get('isAuthenticated')) {
+            return redirect()->to('/login')->with('error', 'Please login to access this page.');
         }
-        
+
         // Get user role
-        $userRole = $session->get('role');
-        $uri = $request->getUri();
-        $path = $uri->getPath();
+        $userRole = session()->get('userRole');
+        $currentPath = $request->getUri()->getPath();
         
-        // Check role-based access
+        // Get URI segments to properly identify the route
+        $segments = $request->getUri()->getSegments();
+        $firstSegment = isset($segments[0]) ? $segments[0] : '';
+
+        // Role-based access control
         switch ($userRole) {
             case 'admin':
-                // Admins can access any route starting with /admin and the unified dashboard
-                if (strpos($path, '/admin') !== 0 && $path !== '/dashboard') {
-                    $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                    return redirect()->to('/dashboard');
+                // Admins can access any route starting with /admin
+                if ($firstSegment === 'admin') {
+                    return; // Allow access
                 }
-                break;
+                // If admin tries to access non-admin routes, redirect to unified dashboard
+                return redirect()->to('/dashboard')->with('error', 'Access Denied: Insufficient Permissions');
                 
             case 'teacher':
-                // Teachers can access routes starting with /teacher, /materials, /course, and the unified dashboard
-                if (strpos($path, '/teacher') !== 0 && 
-                    strpos($path, '/materials') !== 0 && 
-                    strpos($path, '/course') !== 0 && 
-                    strpos($path, '/admin') !== 0 && 
-                    $path !== '/dashboard') {
-                    $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                    return redirect()->to('/dashboard');
+                // Teachers can access routes starting with /teacher
+                if ($firstSegment === 'teacher') {
+                    return; // Allow access
                 }
-                break;
+                // If teacher tries to access non-teacher routes, redirect to unified dashboard
+                return redirect()->to('/dashboard')->with('error', 'Access Denied: Insufficient Permissions');
                 
             case 'student':
-                // Students can access /student routes and /dashboard
-                if (strpos($path, '/student') !== 0 && $path !== '/' && $path !== '/dashboard') {
-                    $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                    return redirect()->to('/dashboard');
+                // Students can access routes starting with /student and /announcements
+                if ($firstSegment === 'student' || $currentPath === '/announcements') {
+                    return; // Allow access
                 }
-                break;
+                // If student tries to access non-student routes, redirect to dashboard
+                return redirect()->to('/dashboard')->with('error', 'Access Denied: Insufficient Permissions');
                 
             default:
-                // Unknown role, redirect to dashboard
-                $session->setFlashdata('error', 'Access Denied: Insufficient Permissions');
-                return redirect()->to('/dashboard');
+                // Unknown role, deny access
+                return redirect()->to('/dashboard')->with('error', 'Access Denied: Insufficient Permissions');
         }
     }
 
@@ -85,10 +80,10 @@ class RoleAuth implements FilterInterface
      * @param ResponseInterface $response
      * @param array|null        $arguments
      *
-     * @return ResponseInterface|void
+     * @return mixed
      */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        //
+        // Do something here
     }
 }

@@ -85,7 +85,7 @@
 <!-- STEP 5: DYNAMIC NAVIGATION BAR -->
 <nav class="navbar navbar-expand-lg sticky-top">
 	<div class="container org-container">
-		<a class="navbar-brand" href="<?= site_url('/') ?>">
+		<a class="navbar-brand" href="<?= base_url('/') ?>">
 			<i class="fas fa-graduation-cap"></i> WebSystem
 		</a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -95,32 +95,32 @@
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav me-auto">
 				<li class="nav-item">
-					<a class="nav-link <?= uri_string() == '' ? 'active' : '' ?>" href="<?= site_url('/') ?>">
+					<a class="nav-link <?= uri_string() == '' ? 'active' : '' ?>" href="<?= base_url('/') ?>">
 						<i class="fas fa-home"></i> Home
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link <?= uri_string() == 'about' ? 'active' : '' ?>" href="<?= site_url('about') ?>">
+					<a class="nav-link <?= uri_string() == 'about' ? 'active' : '' ?>" href="<?= base_url('about') ?>">
 						<i class="fas fa-info-circle"></i> About
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link <?= uri_string() == 'contact' ? 'active' : '' ?>" href="<?= site_url('contact') ?>">
+					<a class="nav-link <?= uri_string() == 'contact' ? 'active' : '' ?>" href="<?= base_url('contact') ?>">
 						<i class="fas fa-envelope"></i> Contact
 					</a>
 				</li>
-				
-				<?php 
-				$role = strtolower((string) session('role'));
-				$isLoggedIn = session('isLoggedIn');
+
+				<?php
+				$role = strtolower((string) session()->get('userRole'));
+				$isLoggedIn = session()->get('isAuthenticated');
 				?>
-				
+
 				<?php if ($isLoggedIn): ?>
 					<!-- ROLE-SPECIFIC NAVIGATION -->
-					
+
 					<?php if ($role === 'admin'): ?>
 						<li class="nav-item">
-							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
+							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= base_url('dashboard') ?>">
 								<i class="fas fa-tachometer-alt"></i> Dashboard
 							</a>
 						</li>
@@ -138,7 +138,7 @@
 						</li>
 					<?php elseif ($role === 'teacher'): ?>
 						<li class="nav-item">
-							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
+							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= base_url('dashboard') ?>">
 								<i class="fas fa-tachometer-alt"></i> Dashboard
 							</a>
 						</li>
@@ -156,7 +156,7 @@
 						</li>
 					<?php elseif ($role === 'student'): ?>
 						<li class="nav-item">
-							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= site_url('dashboard') ?>">
+							<a class="nav-link <?= uri_string() == 'dashboard' ? 'active' : '' ?>" href="<?= base_url('dashboard') ?>">
 								<i class="fas fa-tachometer-alt"></i> Dashboard
 							</a>
 						</li>
@@ -178,13 +178,13 @@
 					<?php endif; ?>
 				<?php endif; ?>
 			</ul>
-			
+
 			<ul class="navbar-nav">
 				<?php if ($isLoggedIn): ?>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-							<i class="fas fa-user"></i> 
-							<?= session('user_name') ?>
+							<i class="fas fa-user"></i>
+							<?= session()->get('user_name') ?>
 							<span class="badge badge-soft ms-1">
 								<?= ucfirst($role) ?>
 							</span>
@@ -193,12 +193,12 @@
 							<li><a class="dropdown-item" href="#"><i class="fas fa-user-circle"></i> Profile</a></li>
 							<li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Settings</a></li>
 							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="<?= site_url('logout') ?>"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+							<li><a class="dropdown-item" href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
 						</ul>
 					</li>
 				<?php else: ?>
 					<li class="nav-item">
-						<a class="nav-link <?= uri_string() == 'login' ? 'active' : '' ?>" href="<?= site_url('login') ?>">
+						<a class="nav-link <?= uri_string() == 'login' ? 'active' : '' ?>" href="<?= base_url('login') ?>">
 							<i class="fas fa-sign-in-alt"></i> Login
 						</a>
 					</li>

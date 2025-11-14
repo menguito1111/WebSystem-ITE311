@@ -44,6 +44,11 @@ abstract class BaseController extends Controller
     // protected $session;
 
     /**
+     * Data array for views.
+     */
+    protected $data = [];
+
+    /**
      * @return void
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
@@ -54,5 +59,14 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = service('session');
+
+        // Load notification count if user is authenticated
+        if (session()->get('isAuthenticated')) {
+            $userId = session()->get('userId');
+            $notificationModel = new \App\Models\NotificationModel();
+            $this->data['unreadCount'] = $notificationModel->getUnreadCount($userId);
+        } else {
+            $this->data['unreadCount'] = 0;
+        }
     }
 }
