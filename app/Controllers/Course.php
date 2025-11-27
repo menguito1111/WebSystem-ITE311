@@ -229,4 +229,37 @@ class Course extends BaseController
             ]);
         }
     }
+
+    /**
+     * Search courses by name or description.
+     * Accepts GET or POST parameter `search_term`.
+     * Returns JSON for AJAX requests or renders a search results view.
+     *
+     * @return \CodeIgniter\HTTP\ResponseInterface|string
+     */
+    public function search()
+    {
+        $searchTerm = $this->request->getGet('search_term');
+
+        // Allow POST as well
+        if (empty($searchTerm)) {
+            $searchTerm = $this->request->getPost('search_term');
+        }
+
+        // Trim and sanitize
+        $searchTerm = is_string($searchTerm) ? trim($searchTerm) : '';
+
+        if (!empty($searchTerm)) {
+            $this->courseModel->like('course_name', $searchTerm);
+            $this->courseModel->orLike('description', $searchTerm);
+        }
+
+        $courses = $this->courseModel->findAll();
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON($courses);
+        }
+
+        return view('courses/search_results', ['courses' => $courses, 'searchTerm' => $searchTerm]);
+    }
 }

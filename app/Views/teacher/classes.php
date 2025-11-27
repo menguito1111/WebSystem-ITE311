@@ -44,8 +44,21 @@
         </div>
     </div>
 
-    <!-- Classes/Courses Grid -->
-    <div class="row">
+    <!-- Search and Classes/Courses Grid -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form id="searchForm" class="d-flex">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search courses..." name="search_term">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="coursesContainer" class="row">
         <?php
         // For now, we'll get all courses. In a real implementation, you'd filter by teacher
         $courseModel = new \App\Models\CourseModel();
@@ -181,6 +194,65 @@ document.addEventListener('DOMContentLoaded', function() {
             const bsAlert = new bootstrap.Alert(alert);
             bsAlert.close();
         }, 5000);
+    });
+});
+</script>
+
+<script>
+// jQuery-based client-side filtering and server-side search via AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure jQuery is available
+    if (typeof window.jQuery === 'undefined') {
+        return;
+    }
+
+    // Client-side filtering
+    $('#searchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('.card.h-100').filter(function() {
+            $(this).closest('.col-md-6, .col-lg-4').toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+
+    // Server-side search with AJAX (on submit)
+    $('#searchForm').on('submit', function(e) {
+        e.preventDefault();
+        var searchTerm = $('#searchInput').val();
+
+        $.get('<?= base_url('/courses/search') ?>', {search_term: searchTerm}, function(data) {
+            $('#coursesContainer').empty();
+
+            if (data && data.length > 0) {
+                $.each(data, function(index, course) {
+                    var courseHtml = `
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 course-card">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-1">${course.course_name}</h5>
+                                        <span class="badge bg-primary">${course.units || 3} Units</span>
+                                    </div>
+                                    <p class="card-text text-muted small mb-2">Code: ${course.course_code || ''}</p>
+                                    <p class="card-text flex-grow-1">${(course.description || '').substring(0, 120)}${(course.description || '').length > 120 ? '...' : ''}</p>
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted"><i class="fas fa-users me-1"></i>${course.enrollment_count || ''} enrolled</small>
+                                            <small class="text-muted"><i class="fas fa-calendar me-1"></i>${course.semester || 'N/A'}</small>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="<?= base_url('/teacher/course/') ?>${course.course_id}" class="btn btn-outline-primary btn-sm flex-fill"><i class="fas fa-cog me-1"></i>Manage</a>
+                                            <a href="#" class="btn btn-outline-info btn-sm"><i class="fas fa-eye me-1"></i>View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    $('#coursesContainer').append(courseHtml);
+                });
+            } else {
+                $('#coursesContainer').html('<div class="col-12"><div class="alert alert-info">No courses found matching your search.</div></div>');
+            }
+        });
     });
 });
 </script>

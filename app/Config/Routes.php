@@ -61,6 +61,10 @@ $routes->post('/course/unenroll', 'Course::unenroll');
 $routes->get('/course/enrolled', 'Course::getEnrolledCourses');
 $routes->get('/course/available', 'Course::getAvailableCourses');
 
+// Course search (GET for AJAX/search page and POST for form submissions)
+$routes->get('/courses/search', 'Course::search');
+$routes->post('/courses/search', 'Course::search');
+
 // Materials routes
 $routes->get('/admin/course/(:num)/upload', 'Materials::upload/$1');
 $routes->post('/admin/course/(:num)/upload', 'Materials::upload/$1');

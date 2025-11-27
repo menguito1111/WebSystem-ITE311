@@ -458,11 +458,25 @@
         <div class="row mb-4">
             <div class="col-12">
                 <h4 class="mb-3">📚 My Enrolled Courses</h4>
+
+                <!-- Dashboard search (students) -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <form id="dashboardSearchForm" class="d-flex">
+                            <div class="input-group">
+                                <input type="text" id="dashboardSearchInput" class="form-control" placeholder="Search courses..." name="search_term">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <?php if (!empty($enrolledCourses)): ?>
-                    <div class="row">
+                    <div id="dashboardEnrolledContainer" class="row">
                         <?php foreach ($enrolledCourses as $enrollment): ?>
                             <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100">
+                                <div class="card h-100 dashboard-course-card">
                                     <div class="card-body">
                                         <h6 class="card-title text-primary"><?= esc($enrollment['course_name']) ?></h6>
                                         <p class="card-text small text-muted"><?= esc($enrollment['course_code']) ?></p>
@@ -528,10 +542,10 @@
             <div class="col-12">
                 <h4 class="mb-3">🎯 Available Courses</h4>
                 <?php if (!empty($availableCourses)): ?>
-                    <div class="row">
+                    <div id="dashboardAvailableContainer" class="row">
                         <?php foreach ($availableCourses as $course): ?>
                             <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100">
+                                <div class="card h-100 dashboard-course-card">
                                     <div class="card-body">
                                         <h6 class="card-title text-success"><?= esc($course['course_name']) ?></h6>
                                         <p class="card-text small text-muted"><?= esc($course['course_code']) ?></p>
@@ -918,5 +932,78 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 <?php endif; ?>
 </script>
+
+<?php if ($role === 'student'): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.jQuery === 'undefined') return;
+
+    // Client-side filter across enrolled and available courses
+    $('#dashboardSearchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('.dashboard-course-card').each(function() {
+            var text = $(this).text().toLowerCase();
+            $(this).closest('.col-md-6, .col-lg-4').toggle(text.indexOf(value) > -1);
+        });
+    });
+
+    // Server-side search to show matching courses (replaces available container)
+    $('#dashboardSearchForm').on('submit', function(e) {
+        e.preventDefault();
+        var term = $('#dashboardSearchInput').val();
+
+        $.get('<?= base_url('/courses/search') ?>', {search_term: term}, function(data) {
+            // Replace available courses container with results
+            var $container = $('#dashboardAvailableContainer');
+            if ($container.length === 0) {
+                // Fallback to existing available section
+                $container = $('<div id="dashboardAvailableContainer" class="row"></div>');
+                $('h4:contains("Available Courses")').closest('.col-12').append($container);
+            }
+            $container.empty();
+
+            if (data && data.length > 0) {
+                $.each(data, function(i, course) {
+                    var html = `
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100 dashboard-course-card">
+                                <div class="card-body">
+                                    <h6 class="card-title text-success">${course.course_name}</h6>
+                                    <p class="card-text small text-muted">${course.course_code || ''}</p>
+                                    <p class="card-text small">${(course.description || '').substring(0,100)}${(course.description || '').length > 100 ? '...' : ''}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">${course.units || 3} units</small>
+                                        <button class="btn btn-sm btn-success enroll-btn" data-course-id="${course.course_id}" data-course-name="${course.course_name}">Enroll</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    $container.append(html);
+                });
+            } else {
+                $container.html('<div class="col-12"><div class="alert alert-info">No courses found matching your search.</div></div>');
+            }
+        });
+    });
+
+    // Delegate enroll button clicks in dynamic results
+    $(document).on('click', '.enroll-btn', function() {
+        var courseId = $(this).data('course-id');
+        var btn = this;
+        if (confirm('Enroll in this course?')) {
+            $.post('<?= base_url('/course/enroll') ?>', {course_id: courseId}, function(resp) {
+                if (resp.success) {
+                    alert(resp.message);
+                    // Optionally refresh page or update DOM
+                    location.reload();
+                } else {
+                    alert(resp.message);
+                }
+            }, 'json');
+        }
+    });
+});
+</script>
+<?php endif; ?>
 
 <?= $this->endSection() ?>

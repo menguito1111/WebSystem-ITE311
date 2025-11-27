@@ -39,6 +39,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Course Search (Admin) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Search Courses</h5>
+                    <p class="text-muted">Quickly search all courses in the system.</p>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <form id="adminSearchForm" class="d-flex">
+                                <div class="input-group">
+                                    <input type="text" id="adminSearchInput" class="form-control" placeholder="Search courses..." name="search_term">
+                                    <button class="btn btn-outline-primary" type="submit">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="adminCoursesContainer" class="row"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Font Awesome for icons -->
@@ -62,4 +89,34 @@
         color: #dc3545 !important;
     }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.jQuery === 'undefined') return;
+
+    $('#adminSearchForm').on('submit', function(e) {
+        e.preventDefault();
+        var term = $('#adminSearchInput').val();
+        $.get('<?= base_url('/courses/search') ?>', {search_term: term}, function(data) {
+            $('#adminCoursesContainer').empty();
+            if (data && data.length > 0) {
+                $.each(data, function(i, course) {
+                    var html = `
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">${course.course_name}</h5>
+                                    <p class="card-text text-muted">${course.description || ''}</p>
+                                    <a href="<?= base_url('/teacher/course/') ?>${course.course_id}" class="btn btn-sm btn-primary">Manage</a>
+                                </div>
+                            </div>
+                        </div>`;
+                    $('#adminCoursesContainer').append(html);
+                });
+            } else {
+                $('#adminCoursesContainer').html('<div class="col-12"><div class="alert alert-info">No courses found.</div></div>');
+            }
+        });
+    });
+});
+</script>
 <?= $this->endSection() ?>
