@@ -152,4 +152,34 @@ class Teacher extends BaseController
             'enrolledStudents' => $enrolledStudents
         ]));
     }
+
+    /**
+     * Return JSON list of enrolled students for a course
+     * Used by the teacher/grades view to load students via AJAX
+     *
+     * @param int $courseId
+     * @return \CodeIgniter\HTTP\Response
+     */
+    public function courseEnrollments($courseId)
+    {
+        // Ensure numeric id
+        $courseId = (int) $courseId;
+
+        $enrollmentModel = new \App\Models\EnrollmentModel();
+
+        $enrollments = $enrollmentModel->getCourseEnrollments($courseId);
+
+        // Map to a simplified structure expected by the frontend
+        $result = [];
+        foreach ($enrollments as $e) {
+            $result[] = [
+                'student_id' => $e['user_id'] ?? null,
+                'student_name' => $e['name'] ?? ($e['student_name'] ?? ''),
+                'student_email' => $e['email'] ?? ($e['student_email'] ?? ''),
+                'grade' => $e['grade'] ?? null
+            ];
+        }
+
+        return $this->response->setJSON($result);
+    }
 }

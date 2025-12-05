@@ -18,9 +18,14 @@ class UserModel extends Model
         'role',
         'created_at',
         'updated_at',
+        'deleted_at',
     ];
 
     protected $useTimestamps = false; // timestamps handled by DB defaults in migration
+
+    // Enable soft deletes so calling delete() will set `deleted_at` instead of removing record
+    protected $useSoftDeletes = true;
+    protected $deletedField = 'deleted_at';
 }
 
 
