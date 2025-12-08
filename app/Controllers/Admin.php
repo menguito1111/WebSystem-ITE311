@@ -44,8 +44,8 @@ class Admin extends BaseController
         $rules = [
             'name' => 'required|min_length[2]|max_length[255]',
             'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length[6]',
-            'role' => 'required|in_list[admin,teacher,student]'
+            'password' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/]',
+            'role' => 'required|in_list[admin,teacher,student,librarian]'
         ];
 
         if (!$this->validate($rules)) {
@@ -60,7 +60,8 @@ class Admin extends BaseController
             'name' => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
             'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role' => $this->request->getPost('role')
+            'role' => $this->request->getPost('role'),
+            'status' => 'active'
         ];
 
         try {
@@ -129,7 +130,7 @@ class Admin extends BaseController
         $rules = [
             'name' => 'required|min_length[2]|max_length[255]',
             'email' => 'required|valid_email|is_unique[users.email,id,' . $id . ']',
-            'role' => 'required|in_list[admin,teacher,student]'
+            'role' => 'required|in_list[admin,teacher,student,librarian]'
         ];
 
         // Only validate password if provided
@@ -209,6 +210,102 @@ class Admin extends BaseController
             'userEmail' => session()->get('userEmail'),
             'userRole' => session()->get('userRole')
         ]);
+    }
+
+    /**
+     * Change user status (activate/deactivate).
+     * Returns JSON.
+     *
+     * @param int $id
+     * @return \CodeIgniter\HTTP\Response
+     */
+    public function changeUserStatus($id = null)
+    {
+        $id = (int) $id;
+        if ($id <= 0) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid user id']);
+        }
+
+        // Prevent deactivating main admin (assume ID 1)
+        if ($id == 1) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Cannot deactivate main admin account']);
+        }
+
+        // Prevent deactivating yourself
+        if (session()->get('userId') == $id) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You cannot deactivate your own account']);
+        }
+
+        $userModel = new \App\Models\UserModel();
+        $user = $userModel->find($id);
+
+        if (!$user) {
+            return $this->response->setJSON(['success' => false, 'message' => 'User not found']);
+        }
+
+        $newStatus = ($user['status'] ?? 'active') === 'active' ? 'inactive' : 'active';
+
+        try {
+            $updated = $userModel->update($id, ['status' => $newStatus]);
+            if ($updated) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'User ' . ($newStatus === 'active' ? 'activated' : 'deactivated') . ' successfully',
+                    'newStatus' => $newStatus
+                ]);
+            } else {
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to update user status']);
+            }
+        } catch (\Exception $e) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Status change failed: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Change user role instantly.
+     * Returns JSON.
+     *
+     * @param int $id
+     * @return \CodeIgniter\HTTP\Response
+     */
+    public function changeUserRole($id = null)
+    {
+        $id = (int) $id;
+        if ($id <= 0) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid user id']);
+        }
+
+        // Prevent changing main admin role (assume ID 1)
+        if ($id == 1) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Cannot change main admin role']);
+        }
+
+        $newRole = $this->request->getPost('role');
+        if (!in_array($newRole, ['admin', 'teacher', 'student', 'librarian'])) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid role']);
+        }
+
+        $userModel = new \App\Models\UserModel();
+        $user = $userModel->find($id);
+
+        if (!$user) {
+            return $this->response->setJSON(['success' => false, 'message' => 'User not found']);
+        }
+
+        try {
+            $updated = $userModel->update($id, ['role' => $newRole]);
+            if ($updated) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'User role updated successfully',
+                    'newRole' => ucfirst($newRole)
+                ]);
+            } else {
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to update user role']);
+            }
+        } catch (\Exception $e) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Role change failed: ' . $e->getMessage()]);
+        }
     }
 
     public function settings()

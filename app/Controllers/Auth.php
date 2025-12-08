@@ -33,6 +33,11 @@ class Auth extends BaseController
                 return redirect()->back()->with('login_error', 'Incorrect password.');
             }
 
+            // Check if user is active
+            if (($userRecord['status'] ?? 'active') !== 'active') {
+                return redirect()->back()->with('login_error', 'Your account is inactive. Please contact administrator.');
+            }
+
             // Save session
             $userSession = [
                 'userId'          => $userRecord['id'],

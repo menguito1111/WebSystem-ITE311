@@ -16,6 +16,7 @@ class UserModel extends Model
         'email',
         'password',
         'role',
+        'status',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -27,5 +28,3 @@ class UserModel extends Model
     protected $useSoftDeletes = true;
     protected $deletedField = 'deleted_at';
 }
-
-

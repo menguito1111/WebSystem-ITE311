@@ -29,6 +29,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
+                            <th>Status</th>
                             <th>Created</th>
                             <th class="text-center">Actions</th>
                         </tr>
@@ -40,15 +41,43 @@
                                     <td><?= esc($u['id'] ?? $u['user_id'] ?? '') ?></td>
                                     <td><?= esc($u['name'] ?? '') ?></td>
                                     <td><?= esc($u['email'] ?? '') ?></td>
-                                    <td><?= esc(ucfirst($u['role'] ?? '')) ?></td>
+                                    <td>
+                                        <?php if (($u['id'] ?? $u['user_id'] ?? 0) == 1): ?>
+                                            <span class="badge bg-primary">Admin</span>
+                                        <?php else: ?>
+                                            <select class="form-select form-select-sm role-select" data-user-id="<?= esc($u['id'] ?? $u['user_id'] ?? '') ?>">
+                                                <option value="student" <?= (($u['role'] ?? '') === 'student') ? 'selected' : '' ?>>Student</option>
+                                                <option value="teacher" <?= (($u['role'] ?? '') === 'teacher') ? 'selected' : '' ?>>Teacher</option>
+                                                <option value="librarian" <?= (($u['role'] ?? '') === 'librarian') ? 'selected' : '' ?>>Librarian</option>
+                                                <option value="admin" <?= (($u['role'] ?? '') === 'admin') ? 'selected' : '' ?>>Admin</option>
+                                            </select>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php $status = $u['status'] ?? 'active'; ?>
+                                        <span class="badge bg-<?= $status === 'active' ? 'success' : 'secondary' ?>">
+                                            <?= ucfirst($status) ?>
+                                        </span>
+                                    </td>
                                     <td><?= esc($u['created_at'] ?? '') ?></td>
                                     <td class="text-center">
                                         <?php if (!empty($u['deleted_at'])): ?>
                                             <span class="badge bg-danger">Deleted</span>
                                             <button class="btn btn-sm btn-outline-secondary" disabled>Edit</button>
                                         <?php else: ?>
-                                            <a href="<?= base_url('/admin/users/edit/' . ($u['id'] ?? $u['user_id'] ?? '')) ?>" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                            <?php if (($u['role'] ?? '') !== 'admin'): ?>
+                                            <?php if (($u['id'] ?? $u['user_id'] ?? 0) != 1): ?>
+                                                <a href="<?= base_url('/admin/users/edit/' . ($u['id'] ?? $u['user_id'] ?? '')) ?>" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                            <?php else: ?>
+                                                <button class="btn btn-sm btn-outline-secondary" disabled title="Cannot edit main admin">Edit</button>
+                                            <?php endif; ?>
+                                            <?php if (($u['id'] ?? $u['user_id'] ?? 0) != 1): ?>
+                                                <button data-user-id="<?= esc($u['id'] ?? $u['user_id'] ?? '') ?>" class="btn btn-sm btn-outline-<?= (($u['status'] ?? 'active') === 'active') ? 'warning' : 'success' ?> btn-toggle-status">
+                                                    <?= (($u['status'] ?? 'active') === 'active') ? 'Deactivate' : 'Activate' ?>
+                                                </button>
+                                            <?php else: ?>
+                                                <button class="btn btn-sm btn-outline-secondary" disabled title="Cannot deactivate main admin">Protected</button>
+                                            <?php endif; ?>
+                                            <?php if (($u['role'] ?? '') !== 'admin' || ($u['id'] ?? $u['user_id'] ?? 0) != 1): ?>
                                                 <button data-id="<?= esc($u['id'] ?? $u['user_id'] ?? '') ?>" class="btn btn-sm btn-outline-danger btn-delete-user">Delete</button>
                                             <?php else: ?>
                                                 <button class="btn btn-sm btn-outline-secondary" disabled title="Cannot delete admin user">Delete</button>
@@ -59,7 +88,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" class="text-center py-4">No users found.</td>
+                                <td colspan="7" class="text-center py-4">No users found.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -99,9 +128,10 @@
                         <label for="userRole" class="form-label">Role</label>
                         <select class="form-control" id="userRole" name="role" required>
                             <option value="">Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="teacher">Teacher</option>
                             <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="librarian">Librarian</option>
+                            <option value="admin">Admin</option>
                         </select>
                     </div>
                 </div>
@@ -169,6 +199,70 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Handle role change
+    document.querySelectorAll('.role-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const userId = this.getAttribute('data-user-id');
+            const newRole = this.value;
+
+            if (!userId || !newRole) return;
+
+            if (!confirm('Are you sure you want to change this user\'s role to ' + newRole + '?')) {
+                // Reset to previous value
+                location.reload();
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('role', newRole);
+
+            fetch('<?= base_url('/admin/users/change-role') ?>/' + userId, {
+                method: 'POST',
+                body: formData
+            }).then(function(res) { return res.json(); }).then(function(data) {
+                if (data && data.success) {
+                    alert(data.message || 'Role updated successfully');
+                    // Update the display
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to update role');
+                    location.reload();
+                }
+            }).catch(function() {
+                alert('Failed to update role');
+                location.reload();
+            });
+        });
+    });
+
+    // Handle status toggle
+    document.querySelectorAll('.btn-toggle-status').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            const currentText = this.textContent.trim();
+
+            if (!userId) return;
+
+            const action = currentText.toLowerCase();
+            if (!confirm('Are you sure you want to ' + action + ' this user?')) return;
+
+            fetch('<?= base_url('/admin/users/change-status') ?>/' + userId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userId })
+            }).then(function(res) { return res.json(); }).then(function(data) {
+                if (data && data.success) {
+                    alert(data.message || 'Status updated successfully');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Failed to update status');
+                }
+            }).catch(function() {
+                alert('Failed to update status');
+            });
+        });
+    });
 });
 </script>
 

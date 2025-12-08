@@ -32,6 +32,8 @@ $routes->group('admin', ['filter' => 'roleAuth'], function($routes) {
         $routes->get('users/edit/(:num)', 'Admin::editUser/$1');
         $routes->post('users/update/(:num)', 'Admin::updateUser/$1');
         $routes->post('users/delete/(:num)', 'Admin::deleteUser/$1');
+        $routes->post('users/change-status/(:num)', 'Admin::changeUserStatus/$1');
+        $routes->post('users/change-role/(:num)', 'Admin::changeUserRole/$1');
     $routes->get('reports', 'Admin::reports');
     $routes->get('settings', 'Admin::settings');
     $routes->get('dashboard', 'Admin::dashboard');
@@ -48,6 +50,16 @@ $routes->group('teacher', ['filter' => 'roleAuth'], function($routes) {
     $routes->get('get-courses', 'Teacher::getCourses');
     $routes->get('course/(:num)', 'Teacher::manageCourse/$1');
     $routes->get('dashboard', 'Teacher::dashboard');
+
+    // Assignment routes
+    $routes->get('assignments', 'Teacher::assignments');
+    $routes->get('assignments/(:num)', 'Teacher::assignments/$1');
+    $routes->get('create-assignment', 'Teacher::createAssignment');
+    $routes->get('create-assignment/(:num)', 'Teacher::createAssignment/$1');
+    $routes->post('store-assignment', 'Teacher::storeAssignment');
+    $routes->get('assignment-submissions/(:num)', 'Teacher::viewSubmissions/$1');
+    $routes->post('grade-submission', 'Teacher::gradeSubmission');
+    $routes->get('get-submission-details/(:num)', 'Teacher::getSubmissionDetails/$1');
 });
 
 // Student routes (student only) - Protected by RoleAuth filter
@@ -56,6 +68,11 @@ $routes->group('student', ['filter' => 'roleAuth'], function($routes) {
     $routes->get('courses', 'Student::courses');
     $routes->get('grades', 'Student::grades');
     $routes->get('assignments', 'Student::assignments');
+
+    // Assignment routes
+    $routes->get('submit-assignment/(:num)', 'Student::submitAssignment/$1');
+    $routes->post('store-submission', 'Student::storeSubmission');
+    $routes->get('view-submission/(:num)', 'Student::viewSubmission/$1');
 });
 
 // Note: Role-based access control is handled by the RoleAuth filter

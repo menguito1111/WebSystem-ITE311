@@ -182,4 +182,257 @@ class Teacher extends BaseController
 
         return $this->response->setJSON($result);
     }
+
+    // ============ ASSIGNMENT METHODS ============
+
+    public function assignments($courseId = null)
+    {
+        $assignmentModel = new \App\Models\AssignmentModel();
+
+        if ($courseId) {
+            $courseModel = new \App\Models\CourseModel();
+            $course = $courseModel->getCourseById($courseId);
+
+            if (!$course || $course['teacher_id'] != session()->get('userId')) {
+                return redirect()->to('/dashboard')->with('error', 'Access denied');
+            }
+
+            $assignments = $assignmentModel->getAssignmentsByCourse($courseId);
+            return view('teacher/course_assignments', array_merge($this->data, [
+                'title' => 'Assignments for ' . $course['course_name'],
+                'userName' => session()->get('userName'),
+                'userEmail' => session()->get('userEmail'),
+                'userRole' => session()->get('userRole'),
+                'course' => $course,
+                'assignments' => $assignments
+            ]));
+        } else {
+            $assignments = $assignmentModel->getAssignmentsByTeacher(session()->get('userId'));
+            return view('teacher/assignments', array_merge($this->data, [
+                'title' => 'My Assignments',
+                'userName' => session()->get('userName'),
+                'userEmail' => session()->get('userEmail'),
+                'userRole' => session()->get('userRole'),
+                'assignments' => $assignments
+            ]));
+        }
+    }
+
+    public function createAssignment($courseId = null)
+    {
+        // Load form helper for set_value() function
+        helper('form');
+
+        $courseModel = new \App\Models\CourseModel();
+        $userId = session()->get('userId');
+
+        // Get courses taught by this teacher
+        $courses = $courseModel->getCoursesByTeacher($userId);
+
+        // If no courses found with teacher_id, check for courses with NULL teacher_id and assign them
+        if (empty($courses)) {
+            $allCourses = $courseModel->getAllCourses();
+            foreach ($allCourses as $course) {
+                // If this course has no teacher assigned, assign it to current teacher
+                if ($course['teacher_id'] === null) {
+                    $courseModel->update($course['course_id'], ['teacher_id' => $userId]);
+                    $course['teacher_id'] = $userId;
+                    $courses[] = $course;
+                }
+            }
+        }
+
+        if ($courseId) {
+            $course = $courseModel->getCourseById($courseId);
+
+            if (!$course || $course['teacher_id'] != $userId) {
+                return redirect()->to('/dashboard')->with('error', 'Access denied');
+            }
+        }
+
+        return view('teacher/create_assignment', array_merge($this->data, [
+            'title' => 'Create Assignment',
+            'userName' => session()->get('userName'),
+            'userEmail' => session()->get('userEmail'),
+            'userRole' => session()->get('userRole'),
+            'courseId' => $courseId,
+            'courses' => $courses
+        ]));
+    }
+
+    public function storeAssignment()
+    {
+        $rules = [
+            'course_id' => 'required|integer',
+            'title' => 'required|max_length[255]',
+            'instructions' => 'permit_empty',
+            'due_date' => 'permit_empty|valid_date[Y-m-d H:i:s]'
+        ];
+
+        // Add attachment validation only if file is uploaded
+        if ($this->request->getFile('attachment')->isValid()) {
+            $rules['attachment'] = 'uploaded[attachment]|max_size[attachment,2048]|mime_in[attachment,pdf,doc,docx,txt]|ext_in[attachment,pdf,doc,docx,txt]';
+        }
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $assignmentModel = new \App\Models\AssignmentModel();
+
+        // Check if course belongs to teacher
+        $courseModel = new \App\Models\CourseModel();
+        $course = $courseModel->getCourseById($this->request->getPost('course_id'));
+        if (!$course || $course['teacher_id'] != session()->get('userId')) {
+            return redirect()->back()->with('error', 'Access denied');
+        }
+
+        $attachmentPath = null;
+        if ($this->request->getFile('attachment')->isValid()) {
+            $file = $this->request->getFile('attachment');
+            $newName = $file->getRandomName();
+            $file->move(WRITEPATH . 'uploads/assignments', $newName);
+            $attachmentPath = 'uploads/assignments/' . $newName;
+        }
+
+        $data = [
+            'course_id' => $this->request->getPost('course_id'),
+            'teacher_id' => session()->get('userId'),
+            'title' => $this->request->getPost('title'),
+            'instructions' => $this->request->getPost('instructions'),
+            'due_date' => $this->request->getPost('due_date') ?: null,
+            'attachment' => $attachmentPath
+        ];
+
+        if ($assignmentModel->insert($data)) {
+            return redirect()->to('/teacher/assignments')->with('success', 'Assignment created successfully!');
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Failed to create assignment');
+        }
+    }
+
+    public function viewSubmissions($assignmentId)
+    {
+        $assignmentModel = new \App\Models\AssignmentModel();
+        $assignment = $assignmentModel->getAssignmentWithSubmissions($assignmentId);
+
+        if (!$assignment || $assignment['teacher_id'] != session()->get('userId')) {
+            return redirect()->to('/dashboard')->with('error', 'Access denied');
+        }
+
+        // Get enrolled students for the course
+        $enrollmentModel = new \App\Models\EnrollmentModel();
+        $enrolledStudents = $enrollmentModel->getCourseEnrollments($assignment['course_id']);
+
+        // Merge submissions with enrolled students to show all
+        $submissionsMap = [];
+        foreach ($assignment['submissions'] as $sub) {
+            $submissionsMap[$sub['user_id']] = $sub;
+        }
+
+        $merged = [];
+        foreach ($enrolledStudents as $student) {
+            $studentData = [
+                'user_id' => $student['user_id'],
+                'student_name' => $student['name'] ?? ($student['student_name'] ?? ''),
+                'student_email' => $student['email'] ?? ($student['student_email'] ?? ''),
+                'submission' => $submissionsMap[$student['user_id']] ?? null,
+                'status' => isset($submissionsMap[$student['user_id']]) ? 'Submitted' : 'Not submitted'
+            ];
+            $merged[] = $studentData;
+        }
+
+        $courseModel = new \App\Models\CourseModel();
+        $course = $courseModel->getCourseById($assignment['course_id']);
+
+        return view('teacher/assignment_submissions', array_merge($this->data, [
+            'title' => 'Submissions for ' . $assignment['title'],
+            'userName' => session()->get('userName'),
+            'userEmail' => session()->get('userEmail'),
+            'userRole' => session()->get('userRole'),
+            'assignment' => $assignment,
+            'course' => $course,
+            'submissions' => $merged
+        ]));
+    }
+
+    public function gradeSubmission()
+    {
+        $assignmentSubmissionId = $this->request->getPost('assignment_submission_id');
+        $grade = $this->request->getPost('grade');
+        $feedback = $this->request->getPost('feedback');
+
+        $submissionModel = new \App\Models\AssignmentSubmissionModel();
+        $submission = $submissionModel->find($assignmentSubmissionId);
+
+        if (!$submission) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Submission not found']);
+        }
+
+        // Check if assignment belongs to teacher
+        $assignmentModel = new \App\Models\AssignmentModel();
+        $assignment = $assignmentModel->find($submission['assignment_id']);
+        if (!$assignment || $assignment['teacher_id'] != session()->get('userId')) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Access denied']);
+        }
+
+        $data = [
+            'grade' => $grade,
+            'feedback' => $feedback,
+            'graded_at' => date('Y-m-d H:i:s')
+        ];
+
+        if ($submissionModel->update($assignmentSubmissionId, $data)) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Grade submitted successfully']);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Failed to submit grade']);
+        }
+    }
+
+    public function getSubmissionDetails($submissionId)
+    {
+        $submissionModel = new \App\Models\AssignmentSubmissionModel();
+        $submission = $submissionModel->select('assignment_submissions.*, users.name as student_name')
+                                      ->join('users', 'users.id = assignment_submissions.user_id', 'left')
+                                      ->find($submissionId);
+
+        if (!$submission) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Submission not found']);
+        }
+
+        // Check if assignment belongs to teacher
+        $assignmentModel = new \App\Models\AssignmentModel();
+        $assignment = $assignmentModel->find($submission['assignment_id']);
+        if (!$assignment || $assignment['teacher_id'] != session()->get('userId')) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Access denied']);
+        }
+
+        $html = '<div class="submission-content">';
+        $html .= '<h6>Submission by: <strong>' . esc($submission['student_name'] ?? 'Unknown') . '</strong></h6>';
+
+        if ($submission['file_path']) {
+            $html .= '<p><strong>File:</strong> <a href="' . base_url('uploads/submissions/' . basename($submission['file_path'])) . '" target="_blank" class="btn btn-sm btn-outline-primary">Download File</a></p>';
+        }
+
+        if ($submission['text']) {
+            $html .= '<div class="mt-3">';
+            $html .= '<strong>Text Submission:</strong>';
+            $html .= '<div class="border p-3 mt-2 bg-light">' . nl2br(esc($submission['text'])) . '</div>';
+            $html .= '</div>';
+        }
+
+        if (!$submission['file_path'] && !$submission['text']) {
+            $html .= '<p class="text-muted">No content submitted.</p>';
+        }
+
+        $html .= '<p class="mt-2"><strong>Submitted on:</strong> ' . date('M j, Y g:i A', strtotime($submission['submitted_at'])) . '</p>';
+        $html .= '</div>';
+
+        return $this->response->setJSON([
+            'success' => true,
+            'html' => $html,
+            'grade' => $submission['grade'],
+            'feedback' => $submission['feedback']
+        ]);
+    }
 }

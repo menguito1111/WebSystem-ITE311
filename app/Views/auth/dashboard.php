@@ -313,9 +313,65 @@
         </div>
         <?php endif; ?>
 
+        <!-- Assignment Section for Teachers -->
+        <?php
+        $assignmentModel = new \App\Models\AssignmentModel();
+        $myAssignments = $assignmentModel->getAssignmentsByTeacher(session()->get('userId'));
+        $pendingGradings = 0;
+
+        foreach ($myAssignments as $assignment) {
+            $submissionModel = new \App\Models\AssignmentSubmissionModel();
+            $submissions = $submissionModel->getSubmissionsByAssignment($assignment['assignment_id']);
+            $pendingGradings += count(array_filter($submissions, function($sub) {
+                return $sub['grade'] === null;
+            }));
+        }
+        ?>
+
+        <?php if (!empty($myAssignments)): ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0"><i class="fas fa-tasks me-2"></i>Assignments Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h3 class="text-success"><?= count($myAssignments) ?></h3>
+                                <p class="mb-0">Total Assignments</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 class="text-warning"><?= array_sum(array_map(function($a) use ($submissionModel) {
+                                    $subs = $submissionModel->getSubmissionsByAssignment($a['assignment_id']);
+                                    return count($subs);
+                                }, $myAssignments)) ?></h3>
+                                <p class="mb-0">Student Submissions</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 class="text-danger"><?= $pendingGradings ?></h3>
+                                <p class="mb-0">Pending Gradings</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 text-center">
+                                <a href="<?= base_url('/teacher/assignments') ?>" class="btn btn-info me-2">
+                                    <i class="fas fa-list me-1"></i>View All Assignments
+                                </a>
+                                <a href="<?= base_url('/teacher/create-assignment') ?>" class="btn btn-success">
+                                    <i class="fas fa-plus me-1"></i>Create New Assignment
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <!-- Teacher Actions -->
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fas fa-chalkboard-teacher me-2"></i>My Classes</h5>
@@ -326,7 +382,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fas fa-plus-circle me-2"></i>Create Course</h5>
@@ -337,7 +393,18 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-tasks me-2"></i>Assignments</h5>
+                        <p class="card-text">Create assignments and grade submissions.</p>
+                        <a href="<?= base_url('/teacher/assignments') ?>" class="btn btn-info">
+                            <i class="fas fa-edit me-1"></i>Manage Assignments
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fas fa-file-upload me-2"></i>Teaching Materials</h5>
@@ -349,7 +416,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Additional Teacher Quick Actions -->
         <div class="row mt-3">
             <div class="col-md-6">
@@ -572,23 +639,80 @@
             </div>
         </div>
 
+        <!-- Assignment Section for Students -->
+        <?php
+        $assignmentSubmissionModel = new \App\Models\AssignmentSubmissionModel();
+        $assignmentStats = $assignmentSubmissionModel->getAssignmentsWithSubmissionStatus(session()->get('userId'));
+
+        $pendingAssignments = array_filter($assignmentStats, function($assignment) {
+            return $assignment['submission_status'] === 'Not submitted';
+        });
+
+        $submittedAssignments = array_filter($assignmentStats, function($assignment) {
+            return $assignment['submission_status'] === 'Submitted';
+        });
+
+        $gradedAssignments = array_filter($assignmentStats, function($assignment) {
+            return $assignment['submission_status'] === 'Graded';
+        });
+        ?>
+
+        <?php if (!empty($assignmentStats)): ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0"><i class="fas fa-clipboard-check me-2"></i>My Assignments Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h3 class="text-danger"><?= count($pendingAssignments) ?></h3>
+                                <p class="mb-0">Pending Submissions</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 class="text-warning"><?= count($submittedAssignments) ?></h3>
+                                <p class="mb-0">Submitted & Pending Grade</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 class="text-success"><?= count($gradedAssignments) ?></h3>
+                                <p class="mb-0">Grades Received</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12 text-center">
+                                <a href="<?= base_url('/student/assignments') ?>" class="btn btn-success me-2">
+                                    <i class="fas fa-eye me-1"></i>View All Assignments
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <!-- Quick Actions -->
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">My Grades</h5>
-                        <p class="card-text">Check your academic performance and grades.</p>
-                        <a href="<?= base_url('/student/grades') ?>" class="btn btn-outline-primary">View Grades</a>
+                        <h5 class="card-title"><i class="fas fa-clipboard-list me-2"></i>My Assignments</h5>
+                        <p class="card-text">View and submit your assignments.</p>
+                        <a href="<?= base_url('/student/assignments') ?>" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i>View Assignments
+                        </a>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">My Assignments</h5>
-                        <p class="card-text">View and submit your assignments.</p>
-                        <a href="<?= base_url('/student/assignments') ?>" class="btn btn-outline-primary">View Assignments</a>
+                        <h5 class="card-title"><i class="fas fa-graduation-cap me-2"></i>My Grades</h5>
+                        <p class="card-text">Check your academic performance and grades.</p>
+                        <a href="<?= base_url('/student/grades') ?>" class="btn btn-outline-success">
+                            <i class="fas fa-chart-line me-1"></i>View Grades
+                        </a>
                     </div>
                 </div>
             </div>

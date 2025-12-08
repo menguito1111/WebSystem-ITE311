@@ -131,11 +131,11 @@
 								<i class="fas fa-user-shield"></i> Admin Tools
 							</a>
 							<ul class="dropdown-menu">
-								<li><a class="dropdown-item" href="#"><i class="fas fa-users"></i> Manage Users</a></li>
-								<li><a class="dropdown-item" href="#"><i class="fas fa-book"></i> Manage Courses</a></li>
-								<li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('admin/manage-users') ?>"><i class="fas fa-users"></i> Manage Users</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('courses/search') ?>"><i class="fas fa-book"></i> Manage Courses</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('admin/settings') ?>"><i class="fas fa-cog"></i> System Settings</a></li>
 								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar"></i> Reports</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('admin/reports') ?>"><i class="fas fa-chart-bar"></i> Reports</a></li>
 							</ul>
 						</li>
 					<?php elseif ($role === 'teacher'): ?>
@@ -149,11 +149,11 @@
 								<i class="fas fa-chalkboard-teacher"></i> Teaching Tools
 							</a>
 							<ul class="dropdown-menu">
-								<li><a class="dropdown-item" href="#"><i class="fas fa-plus"></i> Create Course</a></li>
-								<li><a class="dropdown-item" href="#"><i class="fas fa-file-alt"></i> Create Assignment</a></li>
-								<li><a class="dropdown-item" href="#"><i class="fas fa-chart-line"></i> Grade Book</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('teacher/create-course') ?>"><i class="fas fa-plus"></i> Create Course</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('teacher/materials') ?>"><i class="fas fa-file-alt"></i> Course Materials</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('teacher/grades') ?>"><i class="fas fa-chart-line"></i> Grade Book</a></li>
 								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="#"><i class="fas fa-users"></i> My Students</a></li>
+								<li><a class="dropdown-item" href="<?= base_url('teacher/get-courses') ?>"><i class="fas fa-users"></i> My Courses</a></li>
 							</ul>
 						</li>
 					<?php elseif ($role === 'student'): ?>
@@ -163,17 +163,17 @@
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">
+							<a class="nav-link" href="<?= base_url('student/courses') ?>">
 								<i class="fas fa-book-open"></i> My Courses
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">
+							<a class="nav-link" href="<?= base_url('student/assignments') ?>">
 								<i class="fas fa-file-alt"></i> Assignments
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">
+							<a class="nav-link" href="<?= base_url('student/grades') ?>">
 								<i class="fas fa-chart-bar"></i> Grades
 							</a>
 						</li>
