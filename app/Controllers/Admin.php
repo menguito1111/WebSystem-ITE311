@@ -42,7 +42,7 @@ class Admin extends BaseController
 
         // Validate input
         $rules = [
-            'name' => 'required|min_length[2]|max_length[255]',
+            'name' => 'required|min_length[2]|max_length[255]|regex_match[/^[a-zA-Z\s\-\']+$/]',
             'email' => 'required|valid_email|is_unique[users.email]',
             'role' => 'required|in_list[admin,teacher,student,librarian]'
         ];
