@@ -31,7 +31,7 @@ class AssignmentModel extends Model
         'teacher_id' => 'required|integer',
         'title' => 'required|max_length[255]',
         'instructions' => 'permit_empty',
-        'due_date' => 'permit_empty|valid_date[Y-m-d H:i:s]',
+        'due_date' => 'permit_empty',
         'attachment' => 'permit_empty|max_length[255]'
     ];
 

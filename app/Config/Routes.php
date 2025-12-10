@@ -34,6 +34,10 @@ $routes->group('admin', ['filter' => 'roleAuth'], function($routes) {
         $routes->post('users/delete/(:num)', 'Admin::deleteUser/$1');
         $routes->post('users/change-status/(:num)', 'Admin::changeUserStatus/$1');
         $routes->post('users/change-role/(:num)', 'Admin::changeUserRole/$1');
+    $routes->get('course-management', 'Admin::courseManagement');
+    $routes->get('courses', 'Admin::courseManagement');
+    $routes->post('courses/create', 'Admin::createCourse');
+    $routes->post('courses/update/(:num)', 'Admin::updateCourse/$1');
     $routes->get('reports', 'Admin::reports');
     $routes->get('settings', 'Admin::settings');
     $routes->get('dashboard', 'Admin::dashboard');

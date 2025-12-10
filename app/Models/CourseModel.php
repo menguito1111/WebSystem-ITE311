@@ -17,7 +17,13 @@ class CourseModel extends Model
         'description',
         'course_code',
         'units',
-        'teacher_id'
+        'teacher_id',
+        'school_year',
+        'semester',
+        'schedule',
+        'start_date',
+        'end_date',
+        'status'
     ];
 
     // Dates
@@ -135,12 +141,57 @@ class CourseModel extends Model
 
     /**
      * Get courses by course code
-     * 
+     *
      * @param string $course_code Course code
      * @return array|null Course data or null if not found
      */
     public function getCourseByCode($course_code)
     {
         return $this->where('course_code', $course_code)->first();
+    }
+
+    /**
+     * Get total number of courses
+     *
+     * @return int Total courses count
+     */
+    public function getTotalCourses()
+    {
+        return $this->countAll();
+    }
+
+    /**
+     * Get total number of active courses
+     *
+     * @return int Active courses count
+     */
+    public function getActiveCourses()
+    {
+        return $this->where('status', 'Active')->countAllResults();
+    }
+
+    /**
+     * Get all courses with teacher names
+     *
+     * @return array Array of courses with teacher information
+     */
+    public function getCoursesWithTeachers()
+    {
+        return $this->select('courses.*, users.name as teacher_name')
+                    ->join('users', 'users.id = courses.teacher_id', 'left')
+                    ->orderBy('courses.course_name', 'ASC')
+                    ->findAll();
+    }
+
+    /**
+     * Get courses for admin dashboard (with teacher names and all fields)
+     *
+     * @return array Array of courses for admin dashboard
+     */
+    public function getCoursesForAdmin()
+    {
+        return $this->select('courses.*, users.name as teacher_name')
+                    ->join('users', 'users.id = courses.teacher_id', 'left')
+                    ->findAll();
     }
 }

@@ -266,7 +266,7 @@ class Teacher extends BaseController
             'course_id' => 'required|integer',
             'title' => 'required|max_length[255]',
             'instructions' => 'permit_empty',
-            'due_date' => 'permit_empty|valid_date[Y-m-d H:i:s]'
+            'due_date' => 'permit_empty'
         ];
 
         // Add attachment validation only if file is uploaded
@@ -283,31 +283,47 @@ class Teacher extends BaseController
         // Check if course belongs to teacher
         $courseModel = new \App\Models\CourseModel();
         $course = $courseModel->getCourseById($this->request->getPost('course_id'));
-        if (!$course || $course['teacher_id'] != session()->get('userId')) {
-            return redirect()->back()->with('error', 'Access denied');
+        if (!$course) {
+            return redirect()->back()->withInput()->with('error', 'Course not found');
+        }
+        if ($course['teacher_id'] != session()->get('userId')) {
+            return redirect()->back()->withInput()->with('error', 'You do not have permission to create assignments for this course');
         }
 
         $attachmentPath = null;
-        if ($this->request->getFile('attachment')->isValid()) {
+        if ($this->request->getFile('attachment') && $this->request->getFile('attachment')->isValid()) {
             $file = $this->request->getFile('attachment');
+            if ($file->hasMoved()) {
+                return redirect()->back()->withInput()->with('error', 'File upload failed - file already moved');
+            }
             $newName = $file->getRandomName();
-            $file->move(WRITEPATH . 'uploads/assignments', $newName);
+            if (!$file->move(WRITEPATH . 'uploads/assignments', $newName)) {
+                return redirect()->back()->withInput()->with('error', 'File upload failed - could not move file');
+            }
             $attachmentPath = 'uploads/assignments/' . $newName;
         }
 
         $data = [
-            'course_id' => $this->request->getPost('course_id'),
-            'teacher_id' => session()->get('userId'),
+            'course_id' => (int) $this->request->getPost('course_id'),
+            'teacher_id' => (int) session()->get('userId'),
             'title' => $this->request->getPost('title'),
             'instructions' => $this->request->getPost('instructions'),
             'due_date' => $this->request->getPost('due_date') ?: null,
             'attachment' => $attachmentPath
         ];
 
-        if ($assignmentModel->insert($data)) {
-            return redirect()->to('/teacher/assignments')->with('success', 'Assignment created successfully!');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Failed to create assignment');
+        try {
+            $assignmentId = $assignmentModel->insert($data);
+            if ($assignmentId) {
+                return redirect()->to('/teacher/assignments')->with('success', 'Assignment created successfully!');
+            } else {
+                // Get any database errors
+                $errors = $assignmentModel->errors();
+                $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Unknown database error';
+                return redirect()->back()->withInput()->with('error', 'Failed to create assignment: ' . $errorMsg);
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to create assignment: ' . $e->getMessage());
         }
     }
 

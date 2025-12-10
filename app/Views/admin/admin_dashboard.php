@@ -20,7 +20,7 @@
     </div>
 
     <!-- Welcome Message -->
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-5 text-center">
@@ -32,9 +32,70 @@
                         Role: <span class="badge bg-danger"><?= esc($userRole) ?></span>
                     </p>
                     <p class="text-muted">
-                        This is your admin dashboard. Here you can manage users, 
+                        This is your admin dashboard. Here you can manage users,
                         view system reports, and configure system settings.
                     </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 fw-bold text-danger">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="<?= base_url('/admin/manage-users') ?>" class="text-decoration-none">
+                                <div class="card h-100 border-0 shadow-sm quick-action-card">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fas fa-users text-primary mb-3 fs-2"></i>
+                                        <h6 class="card-title text-primary fw-bold mb-1">Manage Users</h6>
+                                        <p class="card-text text-muted small">Add, edit, and manage system users</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="<?= base_url('/admin/course-management') ?>" class="text-decoration-none">
+                                <div class="card h-100 border-0 shadow-sm quick-action-card">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fas fa-graduation-cap text-success mb-3 fs-2"></i>
+                                        <h6 class="card-title text-success fw-bold mb-1">Course Management</h6>
+                                        <p class="card-text text-muted small">Manage courses, teachers, and schedules</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="<?= base_url('/admin/reports') ?>" class="text-decoration-none">
+                                <div class="card h-100 border-0 shadow-sm quick-action-card">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fas fa-chart-bar text-info mb-3 fs-2"></i>
+                                        <h6 class="card-title text-info fw-bold mb-1">Reports</h6>
+                                        <p class="card-text text-muted small">View system reports and analytics</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="<?= base_url('/admin/settings') ?>" class="text-decoration-none">
+                                <div class="card h-100 border-0 shadow-sm quick-action-card">
+                                    <div class="card-body text-center p-4">
+                                        <i class="fas fa-cog text-warning mb-3 fs-2"></i>
+                                        <h6 class="card-title text-warning fw-bold mb-1">Settings</h6>
+                                        <p class="card-text text-muted small">Configure system settings</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
