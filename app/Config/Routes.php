@@ -36,8 +36,10 @@ $routes->group('admin', ['filter' => 'roleAuth'], function($routes) {
         $routes->post('users/change-role/(:num)', 'Admin::changeUserRole/$1');
     $routes->get('course-management', 'Admin::courseManagement');
     $routes->get('courses', 'Admin::courseManagement');
+    $routes->get('manage-course/(:num)', 'Admin::manageCourse/$1');
     $routes->post('courses/create', 'Admin::createCourse');
     $routes->post('courses/update/(:num)', 'Admin::updateCourse/$1');
+    $routes->post('courses/unenroll-student', 'Admin::unenrollStudent');
     $routes->get('reports', 'Admin::reports');
     $routes->get('settings', 'Admin::settings');
     $routes->get('dashboard', 'Admin::dashboard');
@@ -98,8 +100,14 @@ $routes->post('/admin/course/(:num)/upload', 'Materials::upload/$1');
 $routes->get('/materials/delete/(:num)', 'Materials::delete/$1');
 $routes->get('/materials/download/(:num)', 'Materials::download/$1');
 
-// Announcements route (accessible to all authenticated users)
+// Announcements routes
 $routes->get('/announcements', 'Announcement::index');
+$routes->get('/announcements/create', 'Announcement::create');
+$routes->post('/announcements/store', 'Announcement::store');
+$routes->get('/announcements/edit/(:num)', 'Announcement::edit/$1');
+$routes->post('/announcements/update/(:num)', 'Announcement::update/$1');
+$routes->post('/announcements/delete/(:num)', 'Announcement::delete/$1');
+$routes->get('/announcements/search', 'Announcement::search');
 
 // Notification routes 
 $routes->get('/notifications', 'Notifications::get');

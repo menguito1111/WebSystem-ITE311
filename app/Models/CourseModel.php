@@ -194,4 +194,21 @@ class CourseModel extends Model
                     ->join('users', 'users.id = courses.teacher_id', 'left')
                     ->findAll();
     }
+
+    /**
+     * Get enrolled students for a specific course
+     *
+     * @param int $course_id Course ID
+     * @return array Array of enrolled students
+     */
+    public function getEnrolledStudents($course_id)
+    {
+        return $this->select('users.id, users.name, users.email, enrollments.enrollment_date')
+                    ->join('enrollments', 'enrollments.course_id = courses.course_id', 'inner')
+                    ->join('users', 'users.id = enrollments.user_id', 'inner')
+                    ->where('courses.course_id', $course_id)
+                    ->where('users.role', 'student')
+                    ->orderBy('users.name', 'ASC')
+                    ->findAll();
+    }
 }

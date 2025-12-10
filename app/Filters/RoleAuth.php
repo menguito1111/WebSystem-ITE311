@@ -45,20 +45,32 @@ class RoleAuth implements FilterInterface
                 if ($firstSegment === 'admin') {
                     return; // Allow access
                 }
+                // Allow admins to access announcements and notifications
+                if ($currentPath === '/announcements' || str_starts_with($currentPath, '/notifications/')) {
+                    return; // Allow access
+                }
                 // If admin tries to access non-admin routes, redirect to unified dashboard
                 return redirect()->to('/dashboard')->with('error', 'Access Denied: Insufficient Permissions');
-                
+
             case 'teacher':
                 // Teachers can access routes starting with /teacher
                 if ($firstSegment === 'teacher') {
                     return; // Allow access
                 }
+                // Allow teachers to access announcements and notifications
+                if ($currentPath === '/announcements' || str_starts_with($currentPath, '/notifications/')) {
+                    return; // Allow access
+                }
                 // If teacher tries to access non-teacher routes, redirect to unified dashboard
                 return redirect()->to('/dashboard')->with('error', 'Access Denied: Insufficient Permissions');
-                
+
             case 'student':
                 // Students can access routes starting with /student and /announcements
                 if ($firstSegment === 'student' || $currentPath === '/announcements') {
+                    return; // Allow access
+                }
+                // Allow students to access notifications
+                if (str_starts_with($currentPath, '/notifications/')) {
                     return; // Allow access
                 }
                 // If student tries to access non-student routes, redirect to dashboard

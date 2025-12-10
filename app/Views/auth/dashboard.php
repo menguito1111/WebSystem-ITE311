@@ -163,9 +163,66 @@
         </div>
         <?php endif; ?>
 
+        <!-- Recent Announcements Section -->
+        <?php
+        $announcementModel = new \App\Models\AnnouncementModel();
+        $recentAnnouncements = $announcementModel->orderBy('created_at', 'DESC')->limit(3)->findAll();
+        ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bullhorn me-2"></i>Recent Announcements
+                        </h5>
+                        <div>
+                            <a href="<?= base_url('/announcements/create') ?>" class="btn btn-sm btn-warning me-2">
+                                <i class="fas fa-plus me-1"></i>Create Announcement
+                            </a>
+                            <a href="<?= base_url('/announcements') ?>" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>View All
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($recentAnnouncements)): ?>
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($recentAnnouncements as $announcement): ?>
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-primary">
+                                            <i class="fas fa-info-circle text-info me-2"></i>
+                                            <?= esc($announcement['title']) ?>
+                                        </h6>
+                                        <small class="text-muted">
+                                            <?= date('M d, Y H:i', strtotime($announcement['created_at'])) ?>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1 text-dark">
+                                        <?= esc(substr($announcement['content'], 0, 150)) ?>
+                                        <?= strlen($announcement['content']) > 150 ? '...' : '' ?>
+                                    </p>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                                <h6 class="text-muted">No Announcements Yet</h6>
+                                <p class="text-muted small">Create your first announcement to communicate with students.</p>
+                                <a href="<?= base_url('/announcements/create') ?>" class="btn btn-warning">
+                                    <i class="fas fa-plus me-1"></i>Create First Announcement
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Admin Actions -->
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">User Management</h5>
@@ -174,7 +231,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Course Management</h5>
@@ -183,7 +240,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-bullhorn me-2"></i>Announcements</h5>
+                        <p class="card-text">Create important announcements for students.</p>
+                        <a href="<?= base_url('/announcements/create') ?>" class="btn btn-warning">Create Announcement</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">System Reports</h5>
@@ -417,6 +483,63 @@
             </div>
         </div>
 
+        <!-- Recent Announcements Section -->
+        <?php
+        $announcementModel = new \App\Models\AnnouncementModel();
+        $recentAnnouncements = $announcementModel->orderBy('created_at', 'DESC')->limit(3)->findAll();
+        ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bullhorn me-2"></i>Recent Announcements
+                        </h5>
+                        <div>
+                            <a href="<?= base_url('/announcements/create') ?>" class="btn btn-sm btn-warning me-2">
+                                <i class="fas fa-plus me-1"></i>Create Announcement
+                            </a>
+                            <a href="<?= base_url('/announcements') ?>" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>View All
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($recentAnnouncements)): ?>
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($recentAnnouncements as $announcement): ?>
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1 text-primary">
+                                            <i class="fas fa-info-circle text-info me-2"></i>
+                                            <?= esc($announcement['title']) ?>
+                                        </h6>
+                                        <small class="text-muted">
+                                            <?= date('M d, Y H:i', strtotime($announcement['created_at'])) ?>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1 text-dark">
+                                        <?= esc(substr($announcement['content'], 0, 150)) ?>
+                                        <?= strlen($announcement['content']) > 150 ? '...' : '' ?>
+                                    </p>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                                <h6 class="text-muted">No Announcements Yet</h6>
+                                <p class="text-muted small">Create your first announcement to communicate with students.</p>
+                                <a href="<?= base_url('/announcements/create') ?>" class="btn btn-warning">
+                                    <i class="fas fa-plus me-1"></i>Create First Announcement
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Additional Teacher Quick Actions -->
         <div class="row mt-3">
             <div class="col-md-6">
@@ -442,6 +565,8 @@
                 </div>
             </div>
         </div>
+
+
 
     <?php elseif ($role === 'student'): ?>
         <!-- Student Content -->
@@ -520,6 +645,62 @@
             </div>
         </div>
         <?php endif; ?>
+
+        <!-- Notifications Section -->
+        <?php
+        $notificationModel = new \App\Models\NotificationModel();
+        $notifications = $notificationModel->getNotificationsForUser(session()->get('userId'), 3);
+        ?>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bell me-2"></i>Recent Notifications
+                        </h5>
+                        <a href="<?= base_url('/announcements') ?>" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-bullhorn me-1"></i>View Announcements
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($notifications)): ?>
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($notifications as $notification): ?>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-info-circle text-info me-3"></i>
+                                        <div>
+                                            <p class="mb-1 fw-medium text-dark"><?= esc($notification['message']) ?></p>
+                                            <small class="text-muted">
+                                                <?= date('M d, Y H:i', strtotime($notification['created_at'])) ?>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-secondary mark-read-btn"
+                                            data-notification-id="<?= $notification['id'] ?>"
+                                            title="Mark as read">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="text-center mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    New announcements appear here automatically
+                                </small>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                                <h6 class="text-muted">No New Notifications</h6>
+                                <p class="text-muted small">You'll see notifications here when teachers or admins post announcements.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Enrolled Courses Section -->
         <div class="row mb-4">
@@ -771,9 +952,66 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 <?php endif; ?>
 
-// Enhanced enrollment functionality for students
+// Enhanced enrollment and notification functionality for students
 <?php if ($role === 'student'): ?>
 document.addEventListener('DOMContentLoaded', function() {
+    // Handle mark as read buttons for notifications
+    document.querySelectorAll('.mark-read-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const notificationId = this.getAttribute('data-notification-id');
+            const listItem = this.closest('.list-group-item');
+
+            // Disable button
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            // Make AJAX request to mark as read
+            fetch('<?= base_url('/notifications/mark_read/') ?>' + notificationId, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the notification from the list with fade effect
+                    listItem.style.opacity = '0';
+                    setTimeout(function() {
+                        listItem.remove();
+
+                        // Check if there are any notifications left
+                        const remainingNotifications = document.querySelectorAll('.list-group-item');
+                        if (remainingNotifications.length === 0) {
+                            // Show empty state
+                            const notificationsCard = document.querySelector('.card:has(.list-group)');
+                            const cardBody = notificationsCard.querySelector('.card-body');
+                            cardBody.innerHTML = `
+                                <div class="text-center py-4">
+                                    <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted">No New Notifications</h6>
+                                    <p class="text-muted small">You'll see notifications here when teachers or admins post announcements.</p>
+                                </div>
+                            `;
+                        }
+                    }, 300);
+                } else {
+                    // Re-enable button on error
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    alert('Failed to mark notification as read. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Re-enable button on error
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                alert('An error occurred. Please try again.');
+            });
+        });
+    });
+
     // Handle enrollment buttons
     const enrollButtons = document.querySelectorAll('.enroll-btn');
     enrollButtons.forEach(function(button) {

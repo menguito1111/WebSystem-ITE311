@@ -145,12 +145,40 @@
 
                         <!-- Students Tab -->
                         <div class="tab-pane fade" id="students" role="tabpanel" aria-labelledby="students-tab">
-                            <h5 class="mb-3">Enrolled Students</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Enrolled Students</h5>
+                            </div>
 
                             <?php if (!empty($enrolledStudents)): ?>
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-muted">Total Students: <?= count($enrolledStudents) ?></span>
+                                <!-- Search Bar -->
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text bg-light">
+                                                                <i class="fas fa-search"></i>
+                                                            </span>
+                                                            <input type="text"
+                                                                   id="studentSearchInput"
+                                                                   class="form-control"
+                                                                   placeholder="Search students by name or email...">
+                                                            <button class="btn btn-outline-secondary" type="button" id="clearSearchBtn">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 text-end">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-users me-1"></i>
+                                                            Showing <span id="studentCount"><?= count($enrolledStudents) ?></span> of <?= count($enrolledStudents) ?> students
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -164,19 +192,23 @@
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="studentsTableBody">
                                             <?php foreach ($enrolledStudents as $student): ?>
-                                            <tr>
+                                            <tr class="student-row">
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <div class="avatar-circle bg-primary text-white me-2" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;">
                                                             <?= strtoupper(substr($student['name'], 0, 1)) ?>
                                                         </div>
-                                                        <?= esc($student['name']) ?>
+                                                        <span class="student-name"><?= esc($student['name']) ?></span>
                                                     </div>
                                                 </td>
-                                                <td><?= esc($student['email']) ?></td>
-                                                <td><?= date('M d, Y H:i', strtotime($student['enrollment_date'])) ?></td>
+                                                <td>
+                                                    <span class="student-email"><?= esc($student['email']) ?></span>
+                                                </td>
+                                                <td>
+                                                    <span class="enrollment-date"><?= date('M d, Y H:i', strtotime($student['enrollment_date'])) ?></span>
+                                                </td>
                                                 <td>
                                                     <span class="badge bg-success">Enrolled</span>
                                                 </td>
@@ -247,8 +279,58 @@ function deleteMaterial(materialId, fileName) {
     }
 }
 
-// Auto-dismiss alerts after 5 seconds
+// Student search functionality
 document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('studentSearchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const studentRows = document.querySelectorAll('.student-row');
+    const studentCount = document.getElementById('studentCount');
+    const totalStudents = <?= count($enrolledStudents) ?>;
+
+    // Search functionality
+    function filterStudents() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        studentRows.forEach(row => {
+            const studentName = row.querySelector('.student-name').textContent.toLowerCase();
+            const studentEmail = row.querySelector('.student-email').textContent.toLowerCase();
+
+            const matches = studentName.includes(searchTerm) || studentEmail.includes(searchTerm);
+
+            if (matches) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update counter
+        studentCount.textContent = visibleCount;
+
+        // Show/hide clear button
+        if (searchTerm.length > 0) {
+            clearSearchBtn.style.display = 'block';
+        } else {
+            clearSearchBtn.style.display = 'none';
+        }
+    }
+
+    // Search input event listener
+    searchInput.addEventListener('input', filterStudents);
+
+    // Clear search button
+    clearSearchBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        filterStudents();
+        searchInput.focus();
+    });
+
+    // Hide clear button initially
+    clearSearchBtn.style.display = 'none';
+
+    // Auto-dismiss alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(function(alert) {
         setTimeout(function() {

@@ -5,13 +5,29 @@ namespace App\Controllers;
 class Admin extends BaseController
 {
     /**
-     * Admin Dashboard
-     * Redirects to unified dashboard with admin-specific functionality
+     * Admin Dashboard - Course Management Interface
      */
     public function dashboard()
     {
-        // Redirect to unified dashboard - it will automatically show admin content
-        return redirect()->to('/dashboard');
+        // Role-based access control is handled by the RoleAuth filter
+        $courseModel = new \App\Models\CourseModel();
+        $userModel = new \App\Models\UserModel();
+
+        $courses = $courseModel->getCoursesForAdmin();
+        $totalCourses = $courseModel->getTotalCourses();
+        $activeCourses = $courseModel->getActiveCourses();
+        $teachers = $userModel->where('role', 'teacher')->findAll();
+
+        return view('admin/admin_dashboard', [
+            'title' => 'Admin Dashboard - Course Management',
+            'userName' => session()->get('userName'),
+            'userEmail' => session()->get('userEmail'),
+            'userRole' => session()->get('userRole'),
+            'courses' => $courses,
+            'totalCourses' => $totalCourses,
+            'activeCourses' => $activeCourses,
+            'teachers' => $teachers
+        ]);
     }
 
     public function manageUsers()
@@ -479,6 +495,62 @@ class Admin extends BaseController
             }
         } catch (\Exception $e) {
             return $this->response->setJSON(['success' => false, 'message' => 'Update failed: ' . $e->getMessage()]);
+        }
+    }
+
+    public function manageCourse($id = null)
+    {
+        $id = (int) $id;
+        if ($id <= 0) {
+            return redirect()->to('/admin/dashboard')->with('error', 'Invalid course ID');
+        }
+
+        $courseModel = new \App\Models\CourseModel();
+        $userModel = new \App\Models\UserModel();
+
+        $course = $courseModel->getCourseById($id);
+
+        if (!$course) {
+            return redirect()->to('/admin/dashboard')->with('error', 'Course not found');
+        }
+
+        // Get enrolled students for this course
+        $enrolledStudents = $courseModel->getEnrolledStudents($id);
+
+        // Get available teachers
+        $teachers = $userModel->where('role', 'teacher')->findAll();
+
+        return view('admin/manage_course', [
+            'title' => 'Manage Course: ' . esc($course['course_name']),
+            'userName' => session()->get('userName'),
+            'userEmail' => session()->get('userEmail'),
+            'userRole' => session()->get('userRole'),
+            'course' => $course,
+            'enrolledStudents' => $enrolledStudents,
+            'teachers' => $teachers
+        ]);
+    }
+
+    public function unenrollStudent()
+    {
+        $studentId = $this->request->getPost('student_id');
+        $courseId = $this->request->getPost('course_id');
+
+        if (!$studentId || !$courseId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request data']);
+        }
+
+        $enrollmentModel = new \App\Models\EnrollmentModel();
+
+        try {
+            $unenrolled = $enrollmentModel->unenrollUser($studentId, $courseId);
+            if ($unenrolled) {
+                return $this->response->setJSON(['success' => true, 'message' => 'Student unenrolled successfully']);
+            } else {
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to unenroll student']);
+            }
+        } catch (\Exception $e) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }
 
