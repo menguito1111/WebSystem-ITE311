@@ -44,7 +44,6 @@ class Admin extends BaseController
         $rules = [
             'name' => 'required|min_length[2]|max_length[255]',
             'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/]',
             'role' => 'required|in_list[admin,teacher,student,librarian]'
         ];
 
@@ -55,11 +54,14 @@ class Admin extends BaseController
             ]);
         }
 
+        // Set default password
+        $defaultPassword = 'password123';
+
         // Prepare user data
         $userData = [
             'name' => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+            'password' => password_hash($defaultPassword, PASSWORD_DEFAULT),
             'role' => $this->request->getPost('role'),
             'status' => 'active'
         ];
@@ -67,7 +69,10 @@ class Admin extends BaseController
         try {
             $userId = $userModel->insert($userData);
             if ($userId) {
-                return $this->response->setJSON(['success' => true, 'message' => 'User created successfully']);
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'User created successfully. Default password: ' . $defaultPassword
+                ]);
             } else {
                 return $this->response->setJSON(['success' => false, 'message' => 'Failed to create user']);
             }

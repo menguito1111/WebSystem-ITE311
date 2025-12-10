@@ -48,8 +48,9 @@
                                             <select class="form-select form-select-sm role-select" data-user-id="<?= esc($u['id'] ?? $u['user_id'] ?? '') ?>">
                                                 <option value="student" <?= (($u['role'] ?? '') === 'student') ? 'selected' : '' ?>>Student</option>
                                                 <option value="teacher" <?= (($u['role'] ?? '') === 'teacher') ? 'selected' : '' ?>>Teacher</option>
-                                                <option value="librarian" <?= (($u['role'] ?? '') === 'librarian') ? 'selected' : '' ?>>Librarian</option>
+                                                
                                                 <option value="admin" <?= (($u['role'] ?? '') === 'admin') ? 'selected' : '' ?>>Admin</option>
+                                                                                            <option value="librarian" <?= (($u['role'] ?? '') === 'librarian') ? 'selected' : '' ?>>Librarian</option>
                                             </select>
                                         <?php endif; ?>
                                     </td>
@@ -121,18 +122,17 @@
                         <input type="email" class="form-control" id="userEmail" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="userPassword" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="userPassword" name="password" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="userRole" class="form-label">Role</label>
                         <select class="form-control" id="userRole" name="role" required>
                             <option value="">Select Role</option>
                             <option value="student">Student</option>
                             <option value="teacher">Teacher</option>
-                            <option value="librarian">Librarian</option>
+                            
                             <option value="admin">Admin</option>
                         </select>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <small><strong>Note:</strong> The default password for new users is: <code>password123</code></small>
                     </div>
                 </div>
                 <div class="modal-footer">
