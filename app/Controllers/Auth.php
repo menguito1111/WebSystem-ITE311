@@ -190,6 +190,10 @@ class Auth extends BaseController
 
                 // Recent enrollments in teacher's courses only
                 $data['recentEnrollments'] = array_slice($teacherEnrollments, 0, 5);
+
+                // Pending enrollment requests awaiting approval
+                $data['pendingEnrollments'] = $enrollmentModel->getPendingByTeacher($userId);
+                $data['pendingEnrollmentCount'] = count($data['pendingEnrollments']);
                 break;
 
             case 'student':

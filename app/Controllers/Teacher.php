@@ -14,6 +14,82 @@ class Teacher extends BaseController
         return redirect()->to('/dashboard');
     }
 
+    /**
+     * Approve a pending enrollment request
+     */
+    public function approveEnrollment($enrollmentId)
+    {
+        $enrollmentModel = new \App\Models\EnrollmentModel();
+        $courseModel = new \App\Models\CourseModel();
+        $notificationModel = new \App\Models\NotificationModel();
+
+        $enrollment = $enrollmentModel->find($enrollmentId);
+        if (!$enrollment) {
+            return redirect()->back()->with('error', 'Enrollment request not found.');
+        }
+
+        $course = $courseModel->getCourseById($enrollment['course_id']);
+        if (!$course || $course['teacher_id'] != session()->get('userId')) {
+            return redirect()->back()->with('error', 'You are not authorized to manage this enrollment.');
+        }
+
+        if ($enrollment['status'] === 'approved') {
+            return redirect()->back()->with('info', 'Enrollment already approved.');
+        }
+
+        if ($enrollmentModel->updateStatus($enrollmentId, 'approved')) {
+            // Notify student
+            $notificationModel->insert([
+                'user_id' => $enrollment['user_id'],
+                'message' => 'Your enrollment in ' . ($course['course_name'] ?? 'the course') . ' has been approved.',
+                'is_read' => 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            return redirect()->back()->with('success', 'Enrollment approved.');
+        }
+
+        return redirect()->back()->with('error', 'Failed to approve enrollment.');
+    }
+
+    /**
+     * Reject a pending enrollment request
+     */
+    public function rejectEnrollment($enrollmentId)
+    {
+        $enrollmentModel = new \App\Models\EnrollmentModel();
+        $courseModel = new \App\Models\CourseModel();
+        $notificationModel = new \App\Models\NotificationModel();
+
+        $enrollment = $enrollmentModel->find($enrollmentId);
+        if (!$enrollment) {
+            return redirect()->back()->with('error', 'Enrollment request not found.');
+        }
+
+        $course = $courseModel->getCourseById($enrollment['course_id']);
+        if (!$course || $course['teacher_id'] != session()->get('userId')) {
+            return redirect()->back()->with('error', 'You are not authorized to manage this enrollment.');
+        }
+
+        if ($enrollment['status'] === 'rejected') {
+            return redirect()->back()->with('info', 'Enrollment already rejected.');
+        }
+
+        if ($enrollmentModel->updateStatus($enrollmentId, 'rejected')) {
+            // Notify student
+            $notificationModel->insert([
+                'user_id' => $enrollment['user_id'],
+                'message' => 'Your enrollment in ' . ($course['course_name'] ?? 'the course') . ' has been rejected.',
+                'is_read' => 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            return redirect()->back()->with('success', 'Enrollment rejected.');
+        }
+
+        return redirect()->back()->with('error', 'Failed to reject enrollment.');
+    }
+
     public function classes()
     {
         // Role-based access control is handled by the RoleAuth filter

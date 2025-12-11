@@ -76,30 +76,42 @@ class Course extends BaseController
             ]);
         }
 
-        // Prepare enrollment data
+        // Prepare enrollment data with pending status for approval
         $enrollmentData = [
             'user_id' => $user_id,
             'course_id' => $course_id,
-            'enrollment_date' => date('Y-m-d H:i:s')
+            'enrollment_date' => date('Y-m-d H:i:s'),
+            'status' => 'pending'
         ];
 
         // Insert enrollment record
         $enrollmentId = $this->enrollmentModel->enrollUser($enrollmentData);
 
         if ($enrollmentId) {
-            // Create notification
+            // Notify the student
             $notificationModel = new \App\Models\NotificationModel();
             $notificationModel->insert([
                 'user_id' => $user_id,
-                'message' => "You have been enrolled in " . $course['course_name'],
+                'message' => "Your enrollment request for " . $course['course_name'] . " has been sent for approval.",
                 'is_read' => 0,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
 
+            // Notify the teacher if assigned
+            if (!empty($course['teacher_id'])) {
+                $notificationModel->insert([
+                    'user_id' => $course['teacher_id'],
+                    'message' => "New enrollment request from " . session()->get('userName') . " for " . $course['course_name'],
+                    'is_read' => 0,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Successfully enrolled in ' . $course['course_name'] . '!',
+                'message' => 'Enrollment request submitted for ' . $course['course_name'] . '. Awaiting teacher approval.',
                 'enrollment_id' => $enrollmentId,
+                'status' => 'pending',
                 'course' => [
                     'id' => $course['course_id'],
                     'name' => $course['course_name'],

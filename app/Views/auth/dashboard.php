@@ -304,6 +304,65 @@
             </div>
         </div>
 
+        <!-- Pending Enrollment Requests -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0"><i class="fas fa-user-clock me-2"></i>Pending Enrollment Requests</h5>
+                        <span class="badge bg-dark text-white"><?= $pendingEnrollmentCount ?? 0 ?> pending</span>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($pendingEnrollments ?? [])): ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Course</th>
+                                            <th>Requested At</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($pendingEnrollments as $enrollment): ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-semibold"><?= esc($enrollment['student_name'] ?? 'Unknown') ?></div>
+                                                    <div class="text-muted small"><?= esc($enrollment['student_email'] ?? '') ?></div>
+                                                </td>
+                                                <td>
+                                                    <div class="fw-semibold"><?= esc($enrollment['course_name'] ?? 'Course') ?></div>
+                                                    <div class="text-muted small"><?= esc($enrollment['course_code'] ?? '') ?></div>
+                                                </td>
+                                                <td><?= date('M d, Y H:i', strtotime($enrollment['enrollment_date'])) ?></td>
+                                                <td class="text-end">
+                                                    <form action="<?= base_url('/teacher/enrollments/approve/' . $enrollment['id']) ?>" method="post" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-check me-1"></i>Approve
+                                                        </button>
+                                                    </form>
+                                                    <form action="<?= base_url('/teacher/enrollments/reject/' . $enrollment['id']) ?>" method="post" class="d-inline ms-2">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-times me-1"></i>Reject
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else: ?>
+                            <div class="alert alert-light mb-0">
+                                <i class="fas fa-check-circle text-success me-2"></i>No pending enrollment requests right now.
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- My Courses -->
         <?php if (!empty($myCourses)): ?>
         <div class="row mb-4">

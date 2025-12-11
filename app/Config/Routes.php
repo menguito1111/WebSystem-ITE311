@@ -65,6 +65,8 @@ $routes->group('teacher', ['filter' => 'roleAuth'], function($routes) {
     $routes->get('assignment-submissions/(:num)', 'Teacher::viewSubmissions/$1');
     $routes->post('grade-submission', 'Teacher::gradeSubmission');
     $routes->get('get-submission-details/(:num)', 'Teacher::getSubmissionDetails/$1');
+    $routes->post('enrollments/approve/(:num)', 'Teacher::approveEnrollment/$1');
+    $routes->post('enrollments/reject/(:num)', 'Teacher::rejectEnrollment/$1');
 });
 
 // Student routes (student only) - Protected by RoleAuth filter

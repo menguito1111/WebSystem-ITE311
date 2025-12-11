@@ -22,11 +22,13 @@ class Student extends BaseController
         $courseModel = new \App\Models\CourseModel();
 
         $userId = session()->get('userId');
-        $enrollments = $enrollmentModel->getUserEnrollments($userId);
+        $enrollments = $enrollmentModel->getUserEnrollments($userId, []); // include pending/rejected for visibility
 
         // Get materials for each course
         foreach ($enrollments as &$enrollment) {
-            $enrollment['materials'] = $materialModel->getMaterialsByCourse($enrollment['course_id']);
+            $enrollment['materials'] = ($enrollment['status'] ?? 'approved') === 'approved'
+                ? $materialModel->getMaterialsByCourse($enrollment['course_id'])
+                : [];
         }
 
         return view('student/courses', array_merge($this->data, [
@@ -82,6 +84,7 @@ class Student extends BaseController
         $enrollmentModel = new \App\Models\EnrollmentModel();
         $isEnrolled = $enrollmentModel->where('user_id', session()->get('userId'))
                                       ->where('course_id', $assignment['course_id'])
+                                      ->where('status', 'approved')
                                       ->first();
 
         if (!$isEnrolled) {
@@ -127,6 +130,7 @@ class Student extends BaseController
         $enrollmentModel = new \App\Models\EnrollmentModel();
         $isEnrolled = $enrollmentModel->where('user_id', session()->get('userId'))
                                       ->where('course_id', $assignment['course_id'])
+                                      ->where('status', 'approved')
                                       ->first();
 
         if (!$isEnrolled) {
@@ -205,6 +209,7 @@ class Student extends BaseController
         $enrollmentModel = new \App\Models\EnrollmentModel();
         $isEnrolled = $enrollmentModel->where('user_id', session()->get('userId'))
                                       ->where('course_id', $assignment['course_id'])
+                                      ->where('status', 'approved')
                                       ->first();
 
         if (!$isEnrolled) {

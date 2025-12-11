@@ -45,36 +45,52 @@
                         <?php else: ?>
                             <?php foreach ($enrollments as $enrollment): ?>
                                 <div class="card mb-4 course-card">
-                                    <div class="card-header">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">
                                             <?= esc($enrollment['course_code']) ?> - <?= esc($enrollment['course_name']) ?>
                                         </h5>
+                                        <?php $status = $enrollment['status'] ?? 'approved'; ?>
+                                        <span class="badge bg-<?= $status === 'approved' ? 'success' : ($status === 'pending' ? 'warning' : 'danger') ?>">
+                                            <?= ucfirst($status) ?>
+                                        </span>
                                     </div>
                                     <div class="card-body">
                                         <p class="text-muted mb-3">
                                             <strong>Description:</strong> <?= esc($enrollment['description'] ?? 'No description available.') ?>
                                         </p>
 
-                                        <h6>Course Materials</h6>
-                                        <?php if (empty($enrollment['materials'])): ?>
-                                            <p class="text-muted">No materials available for this course.</p>
-                                        <?php else: ?>
-                                            <div class="list-group">
-                                                <?php foreach ($enrollment['materials'] as $material): ?>
-                                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <i class="mdi mdi-file-document-outline me-2"></i>
-                                                            <?= esc($material['file_name']) ?>
-                                                            <small class="text-muted d-block">
-                                                                Uploaded: <?= date('M d, Y', strtotime($material['created_at'])) ?>
-                                                            </small>
-                                                        </div>
-                                                        <a href="<?= base_url('materials/download/' . $material['id']) ?>" class="btn btn-sm btn-primary">
-                                                            <i class="mdi mdi-download me-1"></i>Download
-                                                        </a>
-                                                    </div>
-                                                <?php endforeach; ?>
+                                        <?php if ($status === 'pending'): ?>
+                                            <div class="alert alert-warning mb-3">
+                                                <i class="mdi mdi-timer-sand"></i> Enrollment pending teacher approval. Materials will be available once approved.
                                             </div>
+                                        <?php elseif ($status === 'rejected'): ?>
+                                            <div class="alert alert-danger mb-3">
+                                                <i class="mdi mdi-cancel"></i> Enrollment was rejected. Contact the teacher for details.
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($status === 'approved'): ?>
+                                            <h6>Course Materials</h6>
+                                            <?php if (empty($enrollment['materials'])): ?>
+                                                <p class="text-muted">No materials available for this course.</p>
+                                            <?php else: ?>
+                                                <div class="list-group">
+                                                    <?php foreach ($enrollment['materials'] as $material): ?>
+                                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <i class="mdi mdi-file-document-outline me-2"></i>
+                                                                <?= esc($material['file_name']) ?>
+                                                                <small class="text-muted d-block">
+                                                                    Uploaded: <?= date('M d, Y', strtotime($material['created_at'])) ?>
+                                                                </small>
+                                                            </div>
+                                                            <a href="<?= base_url('materials/download/' . $material['id']) ?>" class="btn btn-sm btn-primary">
+                                                                <i class="mdi mdi-download me-1"></i>Download
+                                                            </a>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                     </div>
                                 </div>

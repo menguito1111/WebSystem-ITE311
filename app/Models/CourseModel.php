@@ -85,7 +85,7 @@ class CourseModel extends Model
         $allCourses = $this->getAllCourses();
         
         // Get enrolled course IDs for the user
-        $enrolledCourses = $enrollmentModel->getUserEnrollments($user_id);
+        $enrolledCourses = $enrollmentModel->getUserEnrollments($user_id, []); // include all statuses to avoid duplicate requests
         $enrolledCourseIds = array_column($enrolledCourses, 'course_id');
         
         // Filter out enrolled courses
@@ -135,6 +135,7 @@ class CourseModel extends Model
                     ->join('enrollments', 'enrollments.course_id = courses.course_id', 'left')
                     ->join('users', 'users.id = enrollments.user_id', 'left')
                     ->where('courses.teacher_id', $teacher_id)
+                    ->where('enrollments.status', 'approved')
                     ->orderBy('enrollments.enrollment_date', 'DESC')
                     ->findAll();
     }
