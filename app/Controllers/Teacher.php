@@ -293,6 +293,7 @@ class Teacher extends BaseController
                 'student_id' => $e['user_id'] ?? null,
                 'student_name' => $e['name'] ?? ($e['student_name'] ?? ''),
                 'student_email' => $e['email'] ?? ($e['student_email'] ?? ''),
+                'year_level' => $e['year_level'] ?? null,
                 'grade' => $e['grade'] ?? null
             ];
         }

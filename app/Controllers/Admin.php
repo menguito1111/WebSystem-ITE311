@@ -61,7 +61,8 @@ class Admin extends BaseController
         $rules = [
             'name' => 'required|min_length[2]|max_length[255]|regex_match[/^[a-zA-Z\s\-\']+$/]',
             'email' => 'required|valid_email|is_unique[users.email]',
-            'role' => 'required|in_list[admin,teacher,student,librarian]'
+            'role' => 'required|in_list[admin,teacher,student,librarian]',
+            'year_level' => 'permit_empty|in_list[1st Year,2nd Year,3rd Year,4th Year,5th Year]'
         ];
 
         if (!$this->validate($rules)) {
@@ -80,6 +81,9 @@ class Admin extends BaseController
             'email' => $this->request->getPost('email'),
             'password' => password_hash($defaultPassword, PASSWORD_DEFAULT),
             'role' => $this->request->getPost('role'),
+            'year_level' => $this->request->getPost('role') === 'student'
+                ? $this->request->getPost('year_level')
+                : null,
             'status' => 'active'
         ];
 
@@ -152,7 +156,8 @@ class Admin extends BaseController
         $rules = [
             'name' => 'required|min_length[2]|max_length[255]',
             'email' => 'required|valid_email|is_unique[users.email,id,' . $id . ']',
-            'role' => 'required|in_list[admin,teacher,student,librarian]'
+            'role' => 'required|in_list[admin,teacher,student,librarian]',
+            'year_level' => 'permit_empty|in_list[1st Year,2nd Year,3rd Year,4th Year,5th Year]'
         ];
 
         // Only validate password if provided
@@ -168,7 +173,10 @@ class Admin extends BaseController
         $userData = [
             'name' => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
-            'role' => $this->request->getPost('role')
+            'role' => $this->request->getPost('role'),
+            'year_level' => $this->request->getPost('role') === 'student'
+                ? $this->request->getPost('year_level')
+                : null
         ];
 
         // Only update password if provided

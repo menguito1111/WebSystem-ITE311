@@ -67,6 +67,24 @@
                             <?php endif; ?>
                         </div>
 
+                        <div class="mb-3 <?= (old('role', $user['role'] ?? '') === 'student') ? '' : 'd-none' ?>" id="yearLevelWrapper">
+                            <label for="year_level" class="form-label">Year Level</label>
+                            <select class="form-control <?= (isset($errors['year_level'])) ? 'is-invalid' : '' ?>" id="year_level" name="year_level">
+                                <option value="">Select Year Level</option>
+                                <option value="1st Year" <?= (old('year_level', $user['year_level'] ?? '') === '1st Year') ? 'selected' : '' ?>>1st Year</option>
+                                <option value="2nd Year" <?= (old('year_level', $user['year_level'] ?? '') === '2nd Year') ? 'selected' : '' ?>>2nd Year</option>
+                                <option value="3rd Year" <?= (old('year_level', $user['year_level'] ?? '') === '3rd Year') ? 'selected' : '' ?>>3rd Year</option>
+                                <option value="4th Year" <?= (old('year_level', $user['year_level'] ?? '') === '4th Year') ? 'selected' : '' ?>>4th Year</option>
+                                <option value="5th Year" <?= (old('year_level', $user['year_level'] ?? '') === '5th Year') ? 'selected' : '' ?>>5th Year</option>
+                            </select>
+                            <div class="form-text">Only needed for student accounts.</div>
+                            <?php if (isset($errors['year_level'])): ?>
+                                <div class="invalid-feedback">
+                                    <?= $errors['year_level'] ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
                         <div class="d-flex justify-content-between">
                             <a href="<?= base_url('/admin/manage-users') ?>" class="btn btn-outline-secondary">Cancel</a>
                             <button type="submit" class="btn btn-primary">Update User</button>
@@ -77,5 +95,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const yearLevelWrapper = document.getElementById('yearLevelWrapper');
+
+    function toggleYearLevel() {
+        if (!roleSelect || !yearLevelWrapper) return;
+        if (roleSelect.value === 'student') {
+            yearLevelWrapper.classList.remove('d-none');
+        } else {
+            yearLevelWrapper.classList.add('d-none');
+            const select = yearLevelWrapper.querySelector('select');
+            if (select) select.value = '';
+        }
+    }
+
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleYearLevel);
+        toggleYearLevel();
+    }
+});
+</script>
 
 <?= $this->endSection() ?>

@@ -150,7 +150,7 @@ class EnrollmentModel extends Model
      */
     public function getCourseEnrollments($course_id, array $statuses = ['approved'])
     {
-        $builder = $this->select('enrollments.*, users.name, users.email')
+        $builder = $this->select('enrollments.*, users.name, users.email, users.year_level')
                     ->join('users', 'users.id = enrollments.user_id', 'left')
                     ->where('enrollments.course_id', $course_id);
 

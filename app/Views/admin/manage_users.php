@@ -28,6 +28,7 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Year Level</th>
                             <th>Role</th>
                             <th>Status</th>
                             <th>Created</th>
@@ -41,6 +42,13 @@
                                     <td><?= esc($u['id'] ?? $u['user_id'] ?? '') ?></td>
                                     <td><?= esc($u['name'] ?? '') ?></td>
                                     <td><?= esc($u['email'] ?? '') ?></td>
+                                    <td>
+                                        <?php if (($u['role'] ?? '') === 'student'): ?>
+                                            <span class="badge bg-info text-dark"><?= esc($u['year_level'] ?? 'N/A') ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <?php if (($u['id'] ?? $u['user_id'] ?? 0) == 1): ?>
                                             <span class="badge bg-primary">Admin</span>
@@ -131,6 +139,18 @@
                             <option value="admin">Admin</option>
                         </select>
                     </div>
+                    <div class="mb-3 d-none" id="yearLevelGroup">
+                        <label for="yearLevel" class="form-label">Year Level</label>
+                        <select class="form-control" id="yearLevel" name="year_level">
+                            <option value="">Select Year Level</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                            <option value="5th Year">5th Year</option>
+                        </select>
+                        <div class="form-text">Only required for students.</div>
+                    </div>
                     <div class="alert alert-info" role="alert">
                         <small><strong>Note:</strong> The default password for new users is: <code>password123</code></small>
                     </div>
@@ -198,6 +218,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Failed to create user');
             });
         });
+    }
+
+    const roleSelect = document.getElementById('userRole');
+    const yearLevelGroup = document.getElementById('yearLevelGroup');
+
+    function toggleYearLevel() {
+        if (!roleSelect || !yearLevelGroup) return;
+        if (roleSelect.value === 'student') {
+            yearLevelGroup.classList.remove('d-none');
+        } else {
+            yearLevelGroup.classList.add('d-none');
+            yearLevelGroup.querySelector('select').value = '';
+        }
+    }
+
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleYearLevel);
+        toggleYearLevel();
     }
 
     // Handle role change

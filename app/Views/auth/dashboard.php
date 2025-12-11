@@ -848,16 +848,12 @@
                                                 </div>
                                             <?php endif; ?>
                                             
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">
-                                                    Enrolled: <?= date('M d, Y', strtotime($enrollment['enrollment_date'])) ?>
-                                                </small>
-                                                <button class="btn btn-sm btn-outline-danger unenroll-btn" 
-                                                        data-course-id="<?= $enrollment['course_id'] ?>"
-                                                        data-course-name="<?= esc($enrollment['course_name']) ?>">
-                                                    Unenroll
-                                                </button>
-                                            </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                Enrolled: <?= date('M d, Y', strtotime($enrollment['enrollment_date'])) ?>
+                                            </small>
+                                            <span class="badge bg-success">Active</span>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1123,19 +1119,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle unenrollment buttons
-    const unenrollButtons = document.querySelectorAll('.unenroll-btn');
-    unenrollButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-            const courseId = button.getAttribute('data-course-id');
-            const courseName = button.getAttribute('data-course-name');
-
-            if (confirm('Are you sure you want to unenroll from "' + courseName + '"?')) {
-                unenrollFromCourse(courseId, button);
-            }
-        });
-    });
-
     // Function to enroll in a course
     function enrollInCourse(courseId, button) {
         // Disable button and show loading
@@ -1160,11 +1143,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show success message
                 showAlert('success', data.message);
 
-                // Move course card from available to enrolled section
-                moveCourseToEnrolled(courseId, data.course);
-
-                // Update statistics
-                updateEnrollmentStats();
+                // Reload to reflect updated enrollments
+                location.reload();
 
                 // Create notification if available
                 if (typeof createNotification === 'function') {
@@ -1187,179 +1167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to unenroll from a course
-    function unenrollFromCourse(courseId, button) {
-        // Disable button and show loading
-        button.disabled = true;
-        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Unenrolling...';
-
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('course_id', courseId);
-
-        // Make AJAX request
-        fetch('<?= base_url('/course/unenroll') ?>', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Show success message
-                showAlert('success', data.message);
-
-                // Move course card from enrolled to available section
-                moveCourseToAvailable(courseId);
-
-                // Update statistics
-                updateEnrollmentStats();
-            } else {
-                // Show error message
-                showAlert('danger', data.message);
-                // Re-enable button
-                button.disabled = false;
-                button.innerHTML = 'Unenroll';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('danger', 'An error occurred. Please try again.');
-            // Re-enable button
-            button.disabled = false;
-            button.innerHTML = 'Unenroll';
-        });
-    }
-
-    // Function to move course card to enrolled section
-    function moveCourseToEnrolled(courseId, courseData) {
-        // Find the course card in available courses
-        const availableCard = document.querySelector(`.enroll-btn[data-course-id="${courseId}"]`).closest('.col-md-6');
-        if (!availableCard) return;
-
-        // Clone the card and modify for enrolled section
-        const enrolledCard = availableCard.cloneNode(true);
-
-        // Update button to unenroll
-        const button = enrolledCard.querySelector('.enroll-btn');
-        button.className = 'btn btn-sm btn-outline-danger unenroll-btn';
-        button.innerHTML = 'Unenroll';
-        button.setAttribute('data-course-name', courseData.name);
-
-        // Add enrollment date
-        const cardBody = enrolledCard.querySelector('.card-body');
-        const existingFooter = cardBody.querySelector('.d-flex');
-        if (existingFooter) {
-            const enrollmentInfo = document.createElement('div');
-            enrollmentInfo.innerHTML = `<small class="text-muted">Enrolled: ${new Date().toLocaleDateString()}</small>`;
-            existingFooter.insertAdjacentElement('afterend', enrollmentInfo);
-        }
-
-        // Remove materials section if it exists (since it's for enrolled courses)
-        const materialsSection = enrolledCard.querySelector('.mb-3');
-        if (materialsSection && materialsSection.innerHTML.includes('Course Materials')) {
-            materialsSection.remove();
-        }
-
-        // Move to enrolled courses section
-        const enrolledContainer = document.querySelector('#enrolled-courses-container');
-        if (enrolledContainer) {
-            enrolledContainer.appendChild(enrolledCard);
-        } else {
-            // Fallback: find enrolled courses section
-            const enrolledSection = document.querySelector('.row.mb-4 .col-12 h4');
-            if (enrolledSection && enrolledSection.textContent.includes('My Enrolled Courses')) {
-                const container = enrolledSection.closest('.col-12').querySelector('.row');
-                if (container) {
-                    container.appendChild(enrolledCard);
-                }
-            }
-        }
-
-        // Remove from available courses
-        availableCard.remove();
-
-        // Re-attach event listeners to the new button
-        const newButton = enrolledCard.querySelector('.unenroll-btn');
-        newButton.addEventListener('click', function() {
-            const courseId = this.getAttribute('data-course-id');
-            const courseName = this.getAttribute('data-course-name');
-            if (confirm('Are you sure you want to unenroll from "' + courseName + '"?')) {
-                unenrollFromCourse(courseId, this);
-            }
-        });
-    }
-
-    // Function to move course card to available section
-    function moveCourseToAvailable(courseId) {
-        // Find the course card in enrolled courses
-        const enrolledCard = document.querySelector(`.unenroll-btn[data-course-id="${courseId}"]`).closest('.col-md-6');
-        if (!enrolledCard) return;
-
-        // Clone the card and modify for available section
-        const availableCard = enrolledCard.cloneNode(true);
-
-        // Update button to enroll
-        const button = availableCard.querySelector('.unenroll-btn');
-        button.className = 'btn btn-sm btn-success enroll-btn';
-        button.innerHTML = 'Enroll';
-        button.setAttribute('data-course-name', button.getAttribute('data-course-name'));
-
-        // Remove enrollment date
-        const enrollmentInfo = availableCard.querySelector('small.text-muted');
-        if (enrollmentInfo && enrollmentInfo.textContent.includes('Enrolled:')) {
-            enrollmentInfo.remove();
-        }
-
-        // Move to available courses section
-        const availableContainer = document.querySelector('#available-courses-container');
-        if (availableContainer) {
-            availableContainer.appendChild(availableCard);
-        } else {
-            // Fallback: find available courses section
-            const availableSections = document.querySelectorAll('.row.mb-4 .col-12 h4');
-            availableSections.forEach(section => {
-                if (section.textContent.includes('Available Courses')) {
-                    const container = section.closest('.col-12').querySelector('.row');
-                    if (container) {
-                        container.appendChild(availableCard);
-                    }
-                }
-            });
-        }
-
-        // Remove from enrolled courses
-        enrolledCard.remove();
-
-        // Re-attach event listeners to the new button
-        const newButton = availableCard.querySelector('.enroll-btn');
-        newButton.addEventListener('click', function() {
-            const courseId = this.getAttribute('data-course-id');
-            const courseName = this.getAttribute('data-course-name');
-            if (confirm('Are you sure you want to enroll in "' + courseName + '"?')) {
-                enrollInCourse(courseId, this);
-            }
-        });
-    }
-
-    // Function to update enrollment statistics
-    function updateEnrollmentStats() {
-        // Update enrolled courses count
-        const enrolledCards = document.querySelectorAll('.unenroll-btn').length;
-        const enrolledStat = document.querySelector('.card.bg-primary .card-title');
-        if (enrolledStat) {
-            enrolledStat.textContent = enrolledCards;
-        }
-
-        // Update available courses count
-        const availableCards = document.querySelectorAll('.enroll-btn').length;
-        const availableStat = document.querySelector('.card.bg-success .card-title');
-        if (availableStat) {
-            availableStat.textContent = availableCards;
-        }
-    }
 
     // Function to show alert messages
     function showAlert(type, message) {

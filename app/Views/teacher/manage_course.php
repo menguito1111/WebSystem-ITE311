@@ -188,6 +188,7 @@
                                             <tr>
                                                 <th>Student Name</th>
                                                 <th>Email</th>
+                                                <th>Year Level</th>
                                                 <th>Enrollment Date</th>
                                                 <th>Status</th>
                                             </tr>
@@ -205,6 +206,13 @@
                                                 </td>
                                                 <td>
                                                     <span class="student-email"><?= esc($student['email']) ?></span>
+                                                </td>
+                                                <td>
+                                                    <?php if (($student['year_level'] ?? null)): ?>
+                                                        <span class="badge bg-info text-dark"><?= esc($student['year_level']) ?></span>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">—</span>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td>
                                                     <span class="enrollment-date"><?= date('M d, Y H:i', strtotime($student['enrollment_date'])) ?></span>
