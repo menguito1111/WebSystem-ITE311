@@ -147,6 +147,10 @@
                                                 onclick="openEditModal(<?= $course['course_id'] ?>)">
                                             <i class="fas fa-edit me-1"></i>Edit Details
                                         </button>
+                                        <a class="btn btn-sm btn-outline-secondary ms-1"
+                                           href="<?= base_url('/admin/manage-course/' . $course['course_id']) ?>">
+                                            <i class="fas fa-cog me-1"></i>Manage
+                                        </a>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

@@ -499,6 +499,7 @@ class Admin extends BaseController
 
         $courseModel = new \App\Models\CourseModel();
         $userModel = new \App\Models\UserModel();
+        $enrollmentModel = new \App\Models\EnrollmentModel();
 
         $course = $courseModel->getCourseById($id);
 
