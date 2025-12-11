@@ -102,13 +102,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const yearLevelWrapper = document.getElementById('yearLevelWrapper');
 
     function toggleYearLevel() {
-        if (!roleSelect || !yearLevelWrapper) return;
-        if (roleSelect.value === 'student') {
-            yearLevelWrapper.classList.remove('d-none');
-        } else {
-            yearLevelWrapper.classList.add('d-none');
-            const select = yearLevelWrapper.querySelector('select');
-            if (select) select.value = '';
+        if (!roleSelect) return;
+        const isStudent = roleSelect.value === 'student';
+
+        if (yearLevelWrapper) {
+            if (isStudent) {
+                yearLevelWrapper.classList.remove('d-none');
+                const select = yearLevelWrapper.querySelector('select');
+                if (select) select.required = true;
+            } else {
+                yearLevelWrapper.classList.add('d-none');
+                const select = yearLevelWrapper.querySelector('select');
+                if (select) select.value = '';
+                if (select) select.required = false;
+            }
         }
     }
 

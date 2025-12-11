@@ -43,6 +43,10 @@
                                 <p class="mb-0"><?= esc($course['course_name']) ?></p>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold">Section (CN):</label>
+                                <p class="mb-0"><?= esc($course['section_cn'] ?? 'Not specified') ?></p>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label fw-bold">Status:</label>
                                 <span class="badge bg-<?= $course['status'] == 'Active' ? 'success' : 'secondary' ?> fs-6">
                                     <?= esc($course['status']) ?>
@@ -60,7 +64,14 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Schedule:</label>
-                                <p class="mb-0"><?= esc($course['schedule'] ?? 'Not specified') ?></p>
+                                <p class="mb-1"><?= esc($course['schedule'] ?? 'Not specified') ?></p>
+                                <p class="mb-0">
+                                    <small class="text-muted">
+                                        <?= $course['schedule_date'] ? 'Date: ' . date('M d, Y', strtotime($course['schedule_date'])) : 'Date: Not set' ?>
+                                        |
+                                        <?= $course['schedule_time'] ? 'Time: ' . date('h:i A', strtotime($course['schedule_time'])) : 'Time: Not set' ?>
+                                    </small>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -83,6 +94,20 @@
                             <div class="mb-3">
                                 <label class="form-label fw-bold">End Date:</label>
                                 <p class="mb-0"><?= $course['end_date'] ? date('M d, Y', strtotime($course['end_date'])) : 'Not specified' ?></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Grading Period:</label>
+                                <p class="mb-0"><?= esc($course['grading_period'] ?? 'Not set') ?></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Offer Grading Weight:</label>
+                                <p class="mb-0"><?= isset($course['grading_weight']) && $course['grading_weight'] !== null ? esc($course['grading_weight']) . '%' : 'Not set' ?></p>
                             </div>
                         </div>
                     </div>

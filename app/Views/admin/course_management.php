@@ -96,10 +96,13 @@
                                 <tr>
                                     <th class="border-0 fw-bold px-4 py-3">Course Code</th>
                                     <th class="border-0 fw-bold px-4 py-3">Course Title</th>
+                                    <th class="border-0 fw-bold px-4 py-3">Section (CN)</th>
                                     <th class="border-0 fw-bold px-4 py-3">Description</th>
                                     <th class="border-0 fw-bold px-4 py-3">School Year</th>
                                     <th class="border-0 fw-bold px-4 py-3">Semester</th>
-                                    <th class="border-0 fw-bold px-4 py-3">Schedule</th>
+                                    <th class="border-0 fw-bold px-4 py-3">Schedule Day</th>
+                                    <th class="border-0 fw-bold px-4 py-3">Schedule Time</th>
+                                    <th class="border-0 fw-bold px-4 py-3">Grading</th>
                                     <th class="border-0 fw-bold px-4 py-3">Teacher</th>
                                     <th class="border-0 fw-bold px-4 py-3">Status</th>
                                     <th class="border-0 fw-bold px-4 py-3 text-center">Actions</th>
@@ -111,22 +114,42 @@
                                     data-course-id="<?= $course['course_id'] ?>"
                                     data-course-code="<?= esc($course['course_code']) ?>"
                                     data-course-name="<?= esc($course['course_name']) ?>"
+                                    data-section-cn="<?= esc($course['section_cn'] ?? '') ?>"
                                     data-description="<?= esc($course['description']) ?>"
                                     data-school-year="<?= esc($course['school_year'] ?? '') ?>"
                                     data-semester="<?= esc($course['semester'] ?? '') ?>"
-                                    data-schedule="<?= esc($course['schedule'] ?? '') ?>"
+                                    data-schedule-day="<?= esc($course['schedule_day'] ?? '') ?>"
+                                    data-schedule-time="<?= esc($course['schedule_time'] ?? '') ?>"
                                     data-teacher-id="<?= $course['teacher_id'] ?? '' ?>"
                                     data-start-date="<?= $course['start_date'] ?? '' ?>"
                                     data-end-date="<?= $course['end_date'] ?? '' ?>"
+                                    data-grading-period="<?= esc($course['grading_period'] ?? '') ?>"
+                                    data-grading-weight="<?= esc($course['grading_weight'] ?? '') ?>"
                                     data-status="<?= $course['status'] ?>">
                                     <td class="px-4 py-3 fw-bold text-primary"><?= esc($course['course_code']) ?></td>
                                     <td class="px-4 py-3 fw-semibold"><?= esc($course['course_name']) ?></td>
+                                    <td class="px-4 py-3 text-muted"><?= esc($course['section_cn'] ?? '-') ?></td>
                                     <td class="px-4 py-3 text-muted">
                                         <?= strlen($course['description']) > 50 ? esc(substr($course['description'], 0, 50)) . '...' : esc($course['description']) ?>
                                     </td>
                                     <td class="px-4 py-3"><?= esc($course['school_year'] ?? '-') ?></td>
                                     <td class="px-4 py-3"><?= esc($course['semester'] ?? '-') ?></td>
-                                    <td class="px-4 py-3"><?= esc($course['schedule'] ?? '-') ?></td>
+                                    <td class="px-4 py-3">
+                                        <?= esc($course['schedule_day'] ?? '-') ?>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <?= !empty($course['schedule_time']) ? date('h:i A', strtotime($course['schedule_time'])) : '-' ?>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <?php if (!empty($course['grading_period'])): ?>
+                                            <span class="badge bg-secondary"><?= esc($course['grading_period']) ?></span>
+                                            <?php if (!empty($course['grading_weight'])): ?>
+                                                <small class="text-muted d-block"><?= esc($course['grading_weight']) ?>%</small>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">—</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="px-4 py-3">
                                         <?php if ($course['teacher_name']): ?>
                                             <span class="badge bg-info text-white"><?= esc($course['teacher_name']) ?></span>
@@ -190,6 +213,26 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
+                            <label for="editSectionCn" class="form-label fw-bold">Section (CN)</label>
+                            <input type="text" class="form-control" id="editSectionCn" name="section_cn" placeholder="e.g., CN-01">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editScheduleDay" class="form-label fw-bold">Schedule Day</label>
+                            <select class="form-select" id="editScheduleDay" name="schedule_day">
+                                <option value="">Select Day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
                             <label for="editSchoolYear" class="form-label fw-bold">School Year</label>
                             <input type="text" class="form-control" id="editSchoolYear" name="school_year" placeholder="e.g., 2024-2025">
                         </div>
@@ -226,15 +269,30 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="editSchedule" class="form-label fw-bold">Schedule</label>
-                            <input type="text" class="form-control" id="editSchedule" name="schedule"
-                                   placeholder="e.g., Mon/Wed 9:00-10:30 AM">
+                            <label for="editScheduleTime" class="form-label fw-bold">Schedule Time</label>
+                            <input type="time" class="form-control" id="editScheduleTime" name="schedule_time">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="editDescription" class="form-label fw-bold">Description</label>
-                        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                        <textarea class="form-control" id="editDescription" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editGradingPeriod" class="form-label fw-bold">Grading Period</label>
+                            <select class="form-select" id="editGradingPeriod" name="grading_period">
+                                <option value="">Select Option</option>
+                                <option value="Per Term">Per Term</option>
+                                <option value="Per Semester">Per Semester</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editGradingWeight" class="form-label fw-bold">Offer Grading Weight</label>
+                            <textarea class="form-control" id="editGradingWeight" name="grading_weight" rows="5" placeholder="Quizzes – 20%&#10;Activities – 25%&#10;Assignments – 15%&#10;Midterm Exam – 20%&#10;Final Exam – 20%"></textarea>
+                            <div class="form-text">Enter grading breakdown (e.g., Quizzes – 20%, Activities – 25%, etc.)</div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -288,9 +346,9 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="createSchoolYear" class="form-label fw-bold">School Year</label>
-                            <input type="text" class="form-control" id="createSchoolYear" name="school_year"
-                                   placeholder="e.g., 2024-2025">
+                            <label for="createUnits" class="form-label fw-bold">Units</label>
+                            <input type="number" class="form-control" id="createUnits" name="units" min="1" max="6" placeholder="e.g., 3">
+                            <div class="form-text">Number of credit units for this course (1-6).</div>
                         </div>
                         <div class="col-md-6">
                             <label for="createSemester" class="form-label fw-bold">Semester</label>
@@ -304,18 +362,24 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="createStartDate" class="form-label fw-bold">Start Date</label>
-                            <input type="date" class="form-control" id="createStartDate" name="start_date">
+                        <div class="col-md-4">
+                            <label for="createScheduleDay" class="form-label fw-bold">Schedule Day</label>
+                            <select class="form-select" id="createScheduleDay" name="schedule_day">
+                                <option value="">Select Day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="createEndDate" class="form-label fw-bold">End Date</label>
-                            <input type="date" class="form-control" id="createEndDate" name="end_date">
+                        <div class="col-md-4">
+                            <label for="createScheduleTime" class="form-label fw-bold">Schedule Time</label>
+                            <input type="time" class="form-control" id="createScheduleTime" name="schedule_time">
                         </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="createTeacher" class="form-label fw-bold">Teacher</label>
                             <select class="form-select" id="createTeacher" name="teacher_id">
                                 <option value="">Select Teacher (Optional)</option>
@@ -324,17 +388,28 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="createSchedule" class="form-label fw-bold">Schedule</label>
-                            <input type="text" class="form-control" id="createSchedule" name="schedule"
-                                   placeholder="e.g., Mon/Wed 9:00-10:30 AM">
-                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="createDescription" class="form-label fw-bold">Description</label>
-                        <textarea class="form-control" id="createDescription" name="description" rows="3"
-                                  placeholder="Course description..."></textarea>
+                        <textarea class="form-control" id="createDescription" name="description" rows="4"
+                                  placeholder="Describe what this course covers..."></textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="createGradingPeriod" class="form-label fw-bold">Grading Period</label>
+                            <select class="form-select" id="createGradingPeriod" name="grading_period">
+                                <option value="">Select Option</option>
+                                <option value="Per Term">Per Term</option>
+                                <option value="Per Semester">Per Semester</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="createGradingWeight" class="form-label fw-bold">Offer Grading Weight</label>
+                            <textarea class="form-control" id="createGradingWeight" name="grading_weight" rows="5" placeholder="Quizzes – 20%&#10;Activities – 25%&#10;Assignments – 15%&#10;Midterm Exam – 20%&#10;Final Exam – 20%"></textarea>
+                            <div class="form-text">Enter grading breakdown (e.g., Quizzes – 20%, Activities – 25%, etc.)</div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -481,13 +556,17 @@ function openEditModal(courseId) {
     document.getElementById('editCourseId').value = row.getAttribute('data-course-id');
     document.getElementById('editCourseCode').value = row.getAttribute('data-course-code');
     document.getElementById('editCourseName').value = row.getAttribute('data-course-name');
+    document.getElementById('editSectionCn').value = row.getAttribute('data-section-cn');
     document.getElementById('editSchoolYear').value = row.getAttribute('data-school-year');
     document.getElementById('editSemester').value = row.getAttribute('data-semester');
-    document.getElementById('editSchedule').value = row.getAttribute('data-schedule');
+    document.getElementById('editScheduleDay').value = row.getAttribute('data-schedule-day') || '';
+    document.getElementById('editScheduleTime').value = row.getAttribute('data-schedule-time');
     document.getElementById('editDescription').value = row.getAttribute('data-description');
     document.getElementById('editTeacher').value = row.getAttribute('data-teacher-id');
     document.getElementById('editStartDate').value = row.getAttribute('data-start-date');
     document.getElementById('editEndDate').value = row.getAttribute('data-end-date');
+    document.getElementById('editGradingPeriod').value = row.getAttribute('data-grading-period');
+    document.getElementById('editGradingWeight').value = row.getAttribute('data-grading-weight');
     document.getElementById('editStatus').value = row.getAttribute('data-status');
 
     // Show modal

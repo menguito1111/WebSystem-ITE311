@@ -14,6 +14,7 @@ class CourseModel extends Model
     protected $protectFields = true;
     protected $allowedFields = [
         'course_name',
+        'section_cn',
         'description',
         'course_code',
         'units',
@@ -21,8 +22,13 @@ class CourseModel extends Model
         'school_year',
         'semester',
         'schedule',
+        'schedule_date',
+        'schedule_day',
+        'schedule_time',
         'start_date',
         'end_date',
+        'grading_period',
+        'grading_weight',
         'status'
     ];
 
@@ -35,9 +41,15 @@ class CourseModel extends Model
     // Validation
     protected $validationRules = [
         'course_name' => 'required|min_length[3]|max_length[150]',
+        'section_cn' => 'permit_empty|max_length[50]',
         'description' => 'permit_empty',
         'course_code' => 'required|min_length[3]|max_length[50]|is_unique[courses.course_code]',
-        'units' => 'permit_empty|integer|greater_than[0]'
+        'units' => 'permit_empty|integer|greater_than[0]',
+        'schedule_date' => 'permit_empty|valid_date',
+        'schedule_day' => 'permit_empty|in_list[Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday]',
+        'schedule_time' => 'permit_empty',
+        'grading_period' => 'permit_empty|in_list[Per Term,Per Semester]',
+        'grading_weight' => 'permit_empty|max_length[500]',
     ];
 
     protected $validationMessages = [
@@ -55,6 +67,9 @@ class CourseModel extends Model
         'units' => [
             'integer' => 'Units must be an integer',
             'greater_than' => 'Units must be greater than 0'
+        ],
+        'grading_weight' => [
+            'max_length' => 'Grading weight cannot exceed 500 characters'
         ]
     ];
 

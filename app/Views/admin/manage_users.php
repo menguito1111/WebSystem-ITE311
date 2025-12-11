@@ -97,7 +97,7 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center py-4">No users found.</td>
+                                <td colspan="8" class="text-center py-4">No users found.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -224,13 +224,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const yearLevelGroup = document.getElementById('yearLevelGroup');
 
     function toggleYearLevel() {
-        if (!roleSelect || !yearLevelGroup) return;
-        if (roleSelect.value === 'student') {
-            yearLevelGroup.classList.remove('d-none');
-        } else {
-            yearLevelGroup.classList.add('d-none');
-            yearLevelGroup.querySelector('select').value = '';
+        if (!roleSelect) return;
+        const isStudent = roleSelect.value === 'student';
+        const isTeacher = roleSelect.value === 'teacher';
+
+        // Year level only for students
+        if (yearLevelGroup) {
+            if (isStudent) {
+                yearLevelGroup.classList.remove('d-none');
+                yearLevelGroup.querySelector('select').required = true;
+            } else {
+                yearLevelGroup.classList.add('d-none');
+                yearLevelGroup.querySelector('select').value = '';
+                yearLevelGroup.querySelector('select').required = false;
+            }
         }
+
     }
 
     if (roleSelect) {

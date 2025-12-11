@@ -65,6 +65,8 @@ class Admin extends BaseController
             'year_level' => 'permit_empty|in_list[1st Year,2nd Year,3rd Year,4th Year,5th Year]'
         ];
 
+        $role = $this->request->getPost('role');
+
         if (!$this->validate($rules)) {
             return $this->response->setJSON([
                 'success' => false,
@@ -80,8 +82,8 @@ class Admin extends BaseController
             'name' => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
             'password' => password_hash($defaultPassword, PASSWORD_DEFAULT),
-            'role' => $this->request->getPost('role'),
-            'year_level' => $this->request->getPost('role') === 'student'
+            'role' => $role,
+            'year_level' => $role === 'student'
                 ? $this->request->getPost('year_level')
                 : null,
             'status' => 'active'
@@ -127,7 +129,8 @@ class Admin extends BaseController
             'userName' => session()->get('userName'),
             'userEmail' => session()->get('userEmail'),
             'userRole' => session()->get('userRole'),
-            'user' => $user
+            'user' => $user,
+            'errors' => session()->getFlashdata('errors') ?? []
         ]);
     }
 
@@ -160,6 +163,8 @@ class Admin extends BaseController
             'year_level' => 'permit_empty|in_list[1st Year,2nd Year,3rd Year,4th Year,5th Year]'
         ];
 
+        $role = $this->request->getPost('role');
+
         // Only validate password if provided
         if ($this->request->getPost('password')) {
             $rules['password'] = 'required|min_length[6]';
@@ -173,8 +178,8 @@ class Admin extends BaseController
         $userData = [
             'name' => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
-            'role' => $this->request->getPost('role'),
-            'year_level' => $this->request->getPost('role') === 'student'
+            'role' => $role,
+            'year_level' => $role === 'student'
                 ? $this->request->getPost('year_level')
                 : null
         ];
@@ -360,13 +365,19 @@ class Admin extends BaseController
         $rules = [
             'course_code' => 'required|min_length[3]|max_length[50]|is_unique[courses.course_code]',
             'course_name' => 'required|min_length[3]|max_length[150]',
+            'section_cn' => 'permit_empty|max_length[50]',
             'description' => 'permit_empty',
             'school_year' => 'permit_empty|max_length[20]',
             'semester' => 'permit_empty|in_list[1st Semester,2nd Semester,Summer]',
             'schedule' => 'permit_empty|max_length[100]',
+            'schedule_date' => 'permit_empty|valid_date',
+            'schedule_day' => 'permit_empty|in_list[Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday]',
+            'schedule_time' => 'permit_empty',
             'start_date' => 'permit_empty',
             'end_date' => 'permit_empty',
             'teacher_id' => 'permit_empty|integer',
+            'grading_period' => 'permit_empty|in_list[Per Term,Per Semester]',
+            'grading_weight' => 'permit_empty|max_length[500]',
             'status' => 'required|in_list[Active,Inactive]'
         ];
 
@@ -397,13 +408,20 @@ class Admin extends BaseController
         $courseData = [
             'course_code' => $this->request->getPost('course_code'),
             'course_name' => $this->request->getPost('course_name'),
+            'section_cn' => $this->request->getPost('section_cn'),
             'description' => $this->request->getPost('description'),
+            'units' => $this->request->getPost('units') ?: null,
             'school_year' => $this->request->getPost('school_year'),
             'semester' => $this->request->getPost('semester'),
             'schedule' => $this->request->getPost('schedule'),
+            'schedule_date' => $this->request->getPost('schedule_date') ?: null,
+            'schedule_day' => $this->request->getPost('schedule_day') ?: null,
+            'schedule_time' => $this->request->getPost('schedule_time') ?: null,
             'start_date' => $this->request->getPost('start_date') ?: null,
             'end_date' => $this->request->getPost('end_date') ?: null,
             'teacher_id' => $this->request->getPost('teacher_id') ?: null,
+            'grading_period' => $this->request->getPost('grading_period') ?: null,
+            'grading_weight' => $this->request->getPost('grading_weight') ?: null,
             'status' => $this->request->getPost('status')
         ];
 
@@ -437,13 +455,19 @@ class Admin extends BaseController
         // Validate input
         $rules = [
             'course_name' => 'required|min_length[3]|max_length[150]',
+            'section_cn' => 'permit_empty|max_length[50]',
             'description' => 'permit_empty',
             'school_year' => 'permit_empty|max_length[20]',
             'semester' => 'permit_empty|in_list[1st Semester,2nd Semester,Summer]',
             'schedule' => 'permit_empty|max_length[100]',
+            'schedule_date' => 'permit_empty|valid_date',
+            'schedule_day' => 'permit_empty|in_list[Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday]',
+            'schedule_time' => 'permit_empty',
             'start_date' => 'permit_empty',
             'end_date' => 'permit_empty',
             'teacher_id' => 'permit_empty|integer',
+            'grading_period' => 'permit_empty|in_list[Per Term,Per Semester]',
+            'grading_weight' => 'permit_empty|max_length[500]',
             'status' => 'required|in_list[Active,Inactive]'
         ];
 
@@ -473,13 +497,19 @@ class Admin extends BaseController
         // Prepare course data
         $courseData = [
             'course_name' => $this->request->getPost('course_name'),
+            'section_cn' => $this->request->getPost('section_cn'),
             'description' => $this->request->getPost('description'),
             'school_year' => $this->request->getPost('school_year'),
             'semester' => $this->request->getPost('semester'),
             'schedule' => $this->request->getPost('schedule'),
+            'schedule_date' => $this->request->getPost('schedule_date') ?: null,
+            'schedule_day' => $this->request->getPost('schedule_day') ?: null,
+            'schedule_time' => $this->request->getPost('schedule_time') ?: null,
             'start_date' => $this->request->getPost('start_date') ?: null,
             'end_date' => $this->request->getPost('end_date') ?: null,
             'teacher_id' => $this->request->getPost('teacher_id') ?: null,
+            'grading_period' => $this->request->getPost('grading_period') ?: null,
+            'grading_weight' => $this->request->getPost('grading_weight') ?: null,
             'status' => $this->request->getPost('status')
         ];
 
@@ -618,4 +648,5 @@ class Admin extends BaseController
             'userRole' => session()->get('userRole')
         ]);
     }
+
 }
