@@ -40,7 +40,6 @@ $routes->group('admin', ['filter' => 'roleAuth'], function($routes) {
     $routes->post('courses/create', 'Admin::createCourse');
     $routes->post('courses/update/(:num)', 'Admin::updateCourse/$1');
     $routes->post('courses/unenroll-student', 'Admin::unenrollStudent');
-    $routes->get('reports', 'Admin::reports');
     $routes->get('settings', 'Admin::settings');
     $routes->get('dashboard', 'Admin::dashboard');
 });

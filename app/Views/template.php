@@ -134,8 +134,6 @@
 								<li><a class="dropdown-item" href="<?= base_url('admin/manage-users') ?>"><i class="fas fa-users"></i> Manage Users</a></li>
 								<li><a class="dropdown-item" href="<?= base_url('courses/search') ?>"><i class="fas fa-book"></i> Manage Courses</a></li>
 								<li><a class="dropdown-item" href="<?= base_url('admin/settings') ?>"><i class="fas fa-cog"></i> System Settings</a></li>
-								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="<?= base_url('admin/reports') ?>"><i class="fas fa-chart-bar"></i> Reports</a></li>
 							</ul>
 						</li>
 					<?php elseif ($role === 'teacher'): ?>

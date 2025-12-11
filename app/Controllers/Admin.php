@@ -222,16 +222,7 @@ class Admin extends BaseController
         return $this->response->setJSON(['success' => false, 'message' => 'Failed to delete user']);
     }
 
-    public function reports()
-    {
-        // Role-based access control is handled by the RoleAuth filter
-        return view('admin/reports', [
-            'title' => 'Reports',
-            'userName' => session()->get('userName'),
-            'userEmail' => session()->get('userEmail'),
-            'userRole' => session()->get('userRole')
-        ]);
-    }
+
 
     /**
      * Change user status (activate/deactivate).

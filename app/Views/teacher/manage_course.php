@@ -255,7 +255,7 @@
                     <div class="mb-3">
                         <label for="materialFile" class="form-label">Select File</label>
                         <input type="file" class="form-control" id="materialFile" name="material" required>
-                        <div class="form-text">Supported formats: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, JPG, PNG, MP4, etc.</div>
+                        <div class="form-text">Supported formats: PDF, DOC, DOCX, PPT, PPTX, ZIP.</div>
                     </div>
                     <div class="mb-3">
                         <label for="materialDescription" class="form-label">Description (Optional)</label>

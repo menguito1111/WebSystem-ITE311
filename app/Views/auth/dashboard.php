@@ -249,15 +249,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">System Reports</h5>
-                        <p class="card-text">View system statistics and reports.</p>
-                        <a href="<?= base_url('/admin/reports') ?>" class="btn btn-outline-primary">View Reports</a>
-                    </div>
-                </div>
-            </div>
+
         </div>
 
     <?php elseif ($role === 'teacher'): ?>
