@@ -40,6 +40,7 @@ $routes->group('admin', ['filter' => 'roleAuth'], function($routes) {
     $routes->post('courses/create', 'Admin::createCourse');
     $routes->post('courses/update/(:num)', 'Admin::updateCourse/$1');
     $routes->post('courses/unenroll-student', 'Admin::unenrollStudent');
+    $routes->post('courses/enroll-student', 'Admin::enrollStudent');
     $routes->get('settings', 'Admin::settings');
     $routes->get('dashboard', 'Admin::dashboard');
 });
@@ -54,6 +55,7 @@ $routes->group('teacher', ['filter' => 'roleAuth'], function($routes) {
     $routes->post('store-course', 'Teacher::storeCourse');
     $routes->get('get-courses', 'Teacher::getCourses');
     $routes->get('course/(:num)', 'Teacher::manageCourse/$1');
+    $routes->post('course/update/(:num)', 'Teacher::updateCourse/$1');
     $routes->get('dashboard', 'Teacher::dashboard');
 
     // Assignment routes

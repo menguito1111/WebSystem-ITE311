@@ -120,7 +120,24 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold">Enrolled Students</h5>
-                    <span class="badge bg-info fs-6" id="studentCount"><?= count($enrolledStudents ?? []) ?> Students</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-info fs-6" id="studentCount"><?= count($enrolledStudents ?? []) ?> Students</span>
+                        <?php if (!empty($availableStudents ?? [])): ?>
+                        <form class="d-flex align-items-center" id="adminEnrollForm">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="course_id" value="<?= $course['course_id'] ?>">
+                            <select class="form-select form-select-sm me-2" name="student_id" required>
+                                <option value="">Select student</option>
+                                <?php foreach ($availableStudents as $student): ?>
+                                <option value="<?= $student['id'] ?>"><?= esc($student['name']) ?> (<?= esc($student['email']) ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="fas fa-user-plus me-1"></i>Enroll
+                            </button>
+                        </form>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <?php if (!empty($enrolledStudents)): ?>
@@ -308,6 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const visibleCount = document.getElementById('visibleCount');
     const studentCountBadge = document.getElementById('studentCount');
     const totalStudents = <?= count($enrolledStudents ?? []) ?>;
+    const enrollForm = document.getElementById('adminEnrollForm');
 
     // Search functionality
     function filterStudents() {
@@ -355,6 +373,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Hide clear button initially
         clearSearchBtn.style.display = 'none';
+    }
+
+    // Enroll student submit
+    if (enrollForm) {
+        enrollForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(enrollForm);
+            fetch('<?= base_url('/admin/courses/enroll-student') ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showMessage(data.success ? 'success' : 'error', data.message || '');
+                if (data.success) {
+                    setTimeout(() => location.reload(), 1000);
+                }
+            })
+            .catch(() => showMessage('error', 'Failed to enroll student'));
+        });
     }
 });
 </script>

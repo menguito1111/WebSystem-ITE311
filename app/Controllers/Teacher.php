@@ -230,6 +230,47 @@ class Teacher extends BaseController
     }
 
     /**
+     * Update course (teacher-owned only)
+     */
+    public function updateCourse($courseId)
+    {
+        $courseModel = new \App\Models\CourseModel();
+        $course = $courseModel->getCourseById($courseId);
+
+        if (!$course || $course['teacher_id'] != session()->get('userId')) {
+            return redirect()->to('/dashboard')->with('error', 'You are not allowed to edit this course.');
+        }
+
+        $rules = [
+            'course_name' => 'required|min_length[3]|max_length[150]',
+            'description' => 'permit_empty',
+            'school_year' => 'permit_empty|max_length[20]',
+            'semester' => 'permit_empty|in_list[1st Semester,2nd Semester,Summer]',
+            'schedule' => 'permit_empty|max_length[100]',
+            'start_date' => 'permit_empty',
+            'end_date' => 'permit_empty'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Validation failed: ' . implode(', ', $this->validator->getErrors()));
+        }
+
+        $data = [
+            'course_name' => $this->request->getPost('course_name'),
+            'description' => $this->request->getPost('description'),
+            'school_year' => $this->request->getPost('school_year'),
+            'semester' => $this->request->getPost('semester'),
+            'schedule' => $this->request->getPost('schedule'),
+            'start_date' => $this->request->getPost('start_date') ?: null,
+            'end_date' => $this->request->getPost('end_date') ?: null
+        ];
+
+        $courseModel->update($courseId, $data);
+
+        return redirect()->to('/teacher/course/' . $courseId . '#settings')->with('success', 'Course updated successfully.');
+    }
+
+    /**
      * Return JSON list of enrolled students for a course
      * Used by the teacher/grades view to load students via AJAX
      *

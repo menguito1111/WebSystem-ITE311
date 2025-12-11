@@ -12,6 +12,7 @@ class Admin extends BaseController
         // Role-based access control is handled by the RoleAuth filter
         $courseModel = new \App\Models\CourseModel();
         $userModel = new \App\Models\UserModel();
+        $enrollmentModel = new \App\Models\EnrollmentModel();
 
         $courses = $courseModel->getCoursesForAdmin();
         $totalCourses = $courseModel->getTotalCourses();
@@ -507,9 +508,16 @@ class Admin extends BaseController
 
         // Get enrolled students for this course
         $enrolledStudents = $courseModel->getEnrolledStudents($id);
+        $enrolledIds = array_column($enrolledStudents, 'id');
 
         // Get available teachers
         $teachers = $userModel->where('role', 'teacher')->findAll();
+
+        // Get students not yet enrolled (any status) to allow manual enrollment
+        $allStudents = $userModel->where('role', 'student')->findAll();
+        $availableStudents = array_filter($allStudents, function ($student) use ($enrollmentModel, $id) {
+            return !$enrollmentModel->isAlreadyEnrolled($student['id'], $id, null);
+        });
 
         return view('admin/manage_course', [
             'title' => 'Manage Course: ' . esc($course['course_name']),
@@ -518,7 +526,8 @@ class Admin extends BaseController
             'userRole' => session()->get('userRole'),
             'course' => $course,
             'enrolledStudents' => $enrolledStudents,
-            'teachers' => $teachers
+            'teachers' => $teachers,
+            'availableStudents' => $availableStudents
         ]);
     }
 
@@ -543,6 +552,51 @@ class Admin extends BaseController
         } catch (\Exception $e) {
             return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
+    }
+
+    public function enrollStudent()
+    {
+        $studentId = $this->request->getPost('student_id');
+        $courseId = $this->request->getPost('course_id');
+
+        if (!$studentId || !$courseId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request data']);
+        }
+
+        $enrollmentModel = new \App\Models\EnrollmentModel();
+        $courseModel = new \App\Models\CourseModel();
+
+        // Avoid duplicate enrollments regardless of status
+        if ($enrollmentModel->isAlreadyEnrolled($studentId, $courseId, null)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Student is already enrolled or pending for this course.']);
+        }
+
+        $course = $courseModel->getCourseById($courseId);
+        if (!$course) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Course not found.']);
+        }
+
+        $data = [
+            'user_id' => $studentId,
+            'course_id' => $courseId,
+            'status' => 'approved',
+            'enrollment_date' => date('Y-m-d H:i:s')
+        ];
+
+        if ($enrollmentModel->insert($data)) {
+            // Optional: notify student
+            $notificationModel = new \App\Models\NotificationModel();
+            $notificationModel->insert([
+                'user_id' => $studentId,
+                'message' => 'You have been enrolled in ' . ($course['course_name'] ?? 'a course') . ' by admin.',
+                'is_read' => 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            return $this->response->setJSON(['success' => true, 'message' => 'Student enrolled successfully.']);
+        }
+
+        return $this->response->setJSON(['success' => false, 'message' => 'Failed to enroll student.']);
     }
 
     public function settings()

@@ -372,23 +372,36 @@
                         <h5 class="card-title mb-0">My Courses</h5>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <?php foreach ($myCourses as $course): ?>
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100">
+                        <?php
+                            $myGrouped = [];
+                            foreach ($myCourses as $c) {
+                                $sem = trim($c['semester'] ?? '') ?: 'Unspecified Semester';
+                                $myGrouped[$sem][] = $c;
+                            }
+                        ?>
+                        <?php foreach ($myGrouped as $semester => $coursesBySem): ?>
+                            <h6 class="mb-2"><?= esc($semester) ?></h6>
+                            <div class="row">
+                                <?php foreach ($coursesBySem as $course): ?>
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100">
                                     <div class="card-body">
                                         <h6 class="card-title text-primary"><?= esc($course['course_name']) ?></h6>
                                         <p class="card-text small text-muted"><?= esc($course['course_code']) ?></p>
                                         <p class="card-text small"><?= esc(substr($course['description'] ?? '', 0, 100)) ?><?= strlen($course['description'] ?? '') > 100 ? '...' : '' ?></p>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <small class="text-muted"><?= $course['units'] ?? 3 ?> units</small>
-                                            <a href="<?= base_url('/teacher/course/' . $course['course_id']) ?>" class="btn btn-sm btn-outline-primary">Manage</a>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="<?= base_url('/teacher/course/' . $course['course_id']) ?>" class="btn btn-outline-primary">Manage</a>
+                                                <a href="<?= base_url('/teacher/course/' . $course['course_id'] . '#settings') ?>" class="btn btn-outline-secondary">Edit</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                </div>
+                                <?php endforeach; ?>
                             </div>
-                            <?php endforeach; ?>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -697,6 +710,23 @@
         </div>
         <?php endif; ?>
 
+        <!-- Announcements Quick Access -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card border-primary">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1"><i class="fas fa-bullhorn me-2"></i>Announcements</h6>
+                            <p class="text-muted small mb-0">Stay updated with the latest announcements.</p>
+                        </div>
+                        <a href="<?= base_url('/announcements') ?>" class="btn btn-primary">
+                            View Announcements
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Notifications Section -->
         <?php
         $notificationModel = new \App\Models\NotificationModel();
@@ -705,13 +735,10 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header">
                         <h5 class="card-title mb-0">
                             <i class="fas fa-bell me-2"></i>Recent Notifications
                         </h5>
-                        <a href="<?= base_url('/announcements') ?>" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-bullhorn me-1"></i>View Announcements
-                        </a>
                     </div>
                     <div class="card-body">
                         <?php if (!empty($notifications)): ?>
@@ -772,61 +799,71 @@
                     </div>
                 </div>
                 <?php if (!empty($enrolledCourses)): ?>
-                    <div id="dashboardEnrolledContainer" class="row">
-                        <?php foreach ($enrolledCourses as $enrollment): ?>
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100 dashboard-course-card">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-primary"><?= esc($enrollment['course_name']) ?></h6>
-                                        <p class="card-text small text-muted"><?= esc($enrollment['course_code']) ?></p>
-                                        <p class="card-text small mb-3"><?= esc(substr($enrollment['description'] ?? '', 0, 100)) ?><?= strlen($enrollment['description'] ?? '') > 100 ? '...' : '' ?></p>
-                                        
-                                        <!-- Course Materials -->
-                                        <?php if (!empty($enrollment['materials'])): ?>
-                                            <div class="mb-3">
-                                                <h6 class="text-muted mb-2">📁 Course Materials</h6>
-                                                <div class="list-group list-group-flush">
-                                                    <?php foreach ($enrollment['materials'] as $material): ?>
-                                                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                                            <div>
-                                                                <small class="fw-medium text-dark">
-                                                                    <?= esc($material['file_name']) ?>
-                                                                </small>
-                                                                <br>
-                                                                <small class="text-muted">
-                                                                    Uploaded: <?= date('M d, Y', strtotime($material['created_at'])) ?>
-                                                                </small>
+                    <?php
+                        $enrolledGrouped = [];
+                        foreach ($enrolledCourses as $c) {
+                            $sem = trim($c['semester'] ?? '') ?: 'Unspecified Semester';
+                            $enrolledGrouped[$sem][] = $c;
+                        }
+                    ?>
+                    <?php foreach ($enrolledGrouped as $semester => $coursesBySem): ?>
+                        <h6 class="mb-2"><?= esc($semester) ?></h6>
+                        <div id="dashboardEnrolledContainer" class="row">
+                            <?php foreach ($coursesBySem as $enrollment): ?>
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100 dashboard-course-card">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-primary"><?= esc($enrollment['course_name']) ?></h6>
+                                            <p class="card-text small text-muted"><?= esc($enrollment['course_code']) ?></p>
+                                            <p class="card-text small mb-3"><?= esc(substr($enrollment['description'] ?? '', 0, 100)) ?><?= strlen($enrollment['description'] ?? '') > 100 ? '...' : '' ?></p>
+                                            
+                                            <!-- Course Materials -->
+                                            <?php if (!empty($enrollment['materials'])): ?>
+                                                <div class="mb-3">
+                                                    <h6 class="text-muted mb-2">📁 Course Materials</h6>
+                                                    <div class="list-group list-group-flush">
+                                                        <?php foreach ($enrollment['materials'] as $material): ?>
+                                                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                                <div>
+                                                                    <small class="fw-medium text-dark">
+                                                                        <?= esc($material['file_name']) ?>
+                                                                    </small>
+                                                                    <br>
+                                                                    <small class="text-muted">
+                                                                        Uploaded: <?= date('M d, Y', strtotime($material['created_at'])) ?>
+                                                                    </small>
+                                                                </div>
+                                                                <a href="<?= base_url('/materials/download/' . $material['id']) ?>" 
+                                                                   class="btn btn-sm btn-outline-primary" 
+                                                                   title="Download Material">
+                                                                    Download
+                                                                </a>
                                                             </div>
-                                                            <a href="<?= base_url('/materials/download/' . $material['id']) ?>" 
-                                                               class="btn btn-sm btn-outline-primary" 
-                                                               title="Download Material">
-                                                                Download
-                                                            </a>
-                                                        </div>
-                                                    <?php endforeach; ?>
+                                                        <?php endforeach; ?>
+                                                    </div>
                                                 </div>
+                                            <?php else: ?>
+                                                <div class="mb-3">
+                                                    <small class="text-muted">No materials available for this course yet.</small>
+                                                </div>
+                                            <?php endif; ?>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    Enrolled: <?= date('M d, Y', strtotime($enrollment['enrollment_date'])) ?>
+                                                </small>
+                                                <button class="btn btn-sm btn-outline-danger unenroll-btn" 
+                                                        data-course-id="<?= $enrollment['course_id'] ?>"
+                                                        data-course-name="<?= esc($enrollment['course_name']) ?>">
+                                                    Unenroll
+                                                </button>
                                             </div>
-                                        <?php else: ?>
-                                            <div class="mb-3">
-                                                <small class="text-muted">No materials available for this course yet.</small>
-                                            </div>
-                                        <?php endif; ?>
-                                        
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">
-                                                Enrolled: <?= date('M d, Y', strtotime($enrollment['enrollment_date'])) ?>
-                                            </small>
-                                            <button class="btn btn-sm btn-outline-danger unenroll-btn" 
-                                                    data-course-id="<?= $enrollment['course_id'] ?>"
-                                                    data-course-name="<?= esc($enrollment['course_name']) ?>">
-                                                Unenroll
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <div class="alert alert-info">
                         <h6 class="alert-heading">No Enrolled Courses</h6>
@@ -841,27 +878,37 @@
             <div class="col-12">
                 <h4 class="mb-3">🎯 Available Courses</h4>
                 <?php if (!empty($availableCourses)): ?>
-                    <div id="dashboardAvailableContainer" class="row">
-                        <?php foreach ($availableCourses as $course): ?>
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100 dashboard-course-card">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-success"><?= esc($course['course_name']) ?></h6>
-                                        <p class="card-text small text-muted"><?= esc($course['course_code']) ?></p>
-                                        <p class="card-text small"><?= esc(substr($course['description'] ?? '', 0, 100)) ?><?= strlen($course['description'] ?? '') > 100 ? '...' : '' ?></p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted"><?= $course['units'] ?? 3 ?> units</small>
-                                            <button class="btn btn-sm btn-success enroll-btn" 
-                                                    data-course-id="<?= $course['course_id'] ?>"
-                                                    data-course-name="<?= esc($course['course_name']) ?>">
-                                                Enroll
-                                            </button>
+                    <?php
+                        $availableGrouped = [];
+                        foreach ($availableCourses as $c) {
+                            $sem = trim($c['semester'] ?? '') ?: 'Unspecified Semester';
+                            $availableGrouped[$sem][] = $c;
+                        }
+                    ?>
+                    <?php foreach ($availableGrouped as $semester => $coursesBySem): ?>
+                        <h6 class="mb-2"><?= esc($semester) ?></h6>
+                        <div id="dashboardAvailableContainer" class="row">
+                            <?php foreach ($coursesBySem as $course): ?>
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100 dashboard-course-card">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-success"><?= esc($course['course_name']) ?></h6>
+                                            <p class="card-text small text-muted"><?= esc($course['course_code']) ?></p>
+                                            <p class="card-text small"><?= esc(substr($course['description'] ?? '', 0, 100)) ?><?= strlen($course['description'] ?? '') > 100 ? '...' : '' ?></p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted"><?= $course['units'] ?? 3 ?> units</small>
+                                                <button class="btn btn-sm btn-success enroll-btn" 
+                                                        data-course-id="<?= $course['course_id'] ?>"
+                                                        data-course-name="<?= esc($course['course_name']) ?>">
+                                                    Enroll
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <div class="alert alert-warning">
                         <h6 class="alert-heading">No Available Courses</h6>

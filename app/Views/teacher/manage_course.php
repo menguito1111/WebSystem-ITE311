@@ -229,10 +229,54 @@
                         <!-- Settings Tab -->
                         <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                             <h5 class="mb-3">Course Settings</h5>
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                Course settings and configuration options will be available here.
-                            </div>
+                            <form action="<?= base_url('/teacher/course/update/' . $course['course_id']) ?>" method="post">
+                                <?= csrf_field() ?>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Course Title</label>
+                                        <input type="text" name="course_name" class="form-control" value="<?= esc($course['course_name']) ?>" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">School Year</label>
+                                        <input type="text" name="school_year" class="form-control" value="<?= esc($course['school_year'] ?? '') ?>">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">Semester</label>
+                                        <select name="semester" class="form-select">
+                                            <option value="">Select Semester</option>
+                                            <option value="1st Semester" <?= ($course['semester'] ?? '') === '1st Semester' ? 'selected' : '' ?>>1st Semester</option>
+                                            <option value="2nd Semester" <?= ($course['semester'] ?? '') === '2nd Semester' ? 'selected' : '' ?>>2nd Semester</option>
+                                            <option value="Summer" <?= ($course['semester'] ?? '') === 'Summer' ? 'selected' : '' ?>>Summer</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Schedule</label>
+                                        <input type="text" name="schedule" class="form-control" value="<?= esc($course['schedule'] ?? '') ?>" placeholder="e.g., Mon/Wed 9:00-10:30 AM">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">Start Date</label>
+                                        <input type="date" name="start_date" class="form-control" value="<?= esc($course['start_date'] ?? '') ?>">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">End Date</label>
+                                        <input type="date" name="end_date" class="form-control" value="<?= esc($course['end_date'] ?? '') ?>">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Description</label>
+                                    <textarea name="description" class="form-control" rows="3"><?= esc($course['description'] ?? '') ?></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>Save Changes
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

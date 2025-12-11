@@ -29,49 +29,64 @@
                             No courses available.
                         </div>
                     <?php else: ?>
-                        <?php foreach ($courses as $course): ?>
-                            <div class="card mb-4">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">
-                                        <?= esc($course['course_code']) ?> - <?= esc($course['course_name']) ?>
-                                    </h5>
-                                    <a href="<?= base_url('admin/course/' . $course['course_id'] . '/upload') ?>" class="btn btn-sm btn-primary">
-                                        <i class="mdi mdi-upload me-1"></i>Upload Material
-                                    </a>
-                                </div>
-                                <div class="card-body">
-                                    <p class="text-muted mb-3">
-                                        <strong>Description:</strong> <?= esc($course['description'] ?? 'No description available.') ?>
-                                    </p>
-
-                                    <h6>Course Materials</h6>
-                                    <?php if (empty($course['materials'])): ?>
-                                        <p class="text-muted">No materials uploaded for this course.</p>
-                                    <?php else: ?>
-                                        <div class="list-group">
-                                            <?php foreach ($course['materials'] as $material): ?>
-                                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <i class="mdi mdi-file-document-outline me-2"></i>
-                                                        <?= esc($material['file_name']) ?>
-                                                        <small class="text-muted d-block">
-                                                            Uploaded: <?= date('M d, Y', strtotime($material['created_at'])) ?>
-                                                        </small>
-                                                    </div>
-                                                    <div>
-                                                        <a href="<?= base_url('materials/download/' . $material['id']) ?>" class="btn btn-sm btn-outline-primary me-2">
-                                                            <i class="mdi mdi-download me-1"></i>Download
-                                                        </a>
-                                                        <a href="<?= base_url('materials/delete/' . $material['id']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this material?');">
-                                                            <i class="mdi mdi-delete me-1"></i>Delete
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
+                        <?php
+                            $grouped = [];
+                            foreach ($courses as $course) {
+                                $sem = trim($course['semester'] ?? '') ?: 'Unspecified Semester';
+                                $grouped[$sem][] = $course;
+                            }
+                        ?>
+                        <?php foreach ($grouped as $semester => $semesterCourses): ?>
+                            <h5 class="mt-3 mb-2"><?= esc($semester) ?></h5>
+                            <?php foreach ($semesterCourses as $course): ?>
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <?= esc($course['course_code']) ?> - <?= esc($course['course_name']) ?>
+                                        </h5>
+                                        <div class="d-flex gap-2">
+                                            <a href="<?= base_url('teacher/course/' . $course['course_id'] . '#settings') ?>" class="btn btn-sm btn-outline-secondary">
+                                                <i class="mdi mdi-pencil me-1"></i>Edit
+                                            </a>
+                                            <a href="<?= base_url('admin/course/' . $course['course_id'] . '/upload') ?>" class="btn btn-sm btn-primary">
+                                                <i class="mdi mdi-upload me-1"></i>Upload Material
+                                            </a>
                                         </div>
-                                    <?php endif; ?>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="text-muted mb-3">
+                                            <strong>Description:</strong> <?= esc($course['description'] ?? 'No description available.') ?>
+                                        </p>
+
+                                        <h6>Course Materials</h6>
+                                        <?php if (empty($course['materials'])): ?>
+                                            <p class="text-muted">No materials uploaded for this course.</p>
+                                        <?php else: ?>
+                                            <div class="list-group">
+                                                <?php foreach ($course['materials'] as $material): ?>
+                                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="mdi mdi-file-document-outline me-2"></i>
+                                                            <?= esc($material['file_name']) ?>
+                                                            <small class="text-muted d-block">
+                                                                Uploaded: <?= date('M d, Y', strtotime($material['created_at'])) ?>
+                                                            </small>
+                                                        </div>
+                                                        <div>
+                                                            <a href="<?= base_url('materials/download/' . $material['id']) ?>" class="btn btn-sm btn-outline-primary me-2">
+                                                                <i class="mdi mdi-download me-1"></i>Download
+                                                            </a>
+                                                            <a href="<?= base_url('materials/delete/' . $material['id']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this material?');">
+                                                                <i class="mdi mdi-delete me-1"></i>Delete
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
-                            </div>
+                            <?php endforeach; ?>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
