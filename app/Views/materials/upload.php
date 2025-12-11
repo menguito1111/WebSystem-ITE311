@@ -27,8 +27,8 @@
                         <?= csrf_field() ?>
                         <div class="mb-3">
                             <label for="material" class="form-label">Select File</label>
-                            <input type="file" class="form-control" id="material" name="material" required>
-                            <div class="form-text">Allowed types: PDF, DOC, DOCX, PPT, PPTX, ZIP. Max size: 10MB.</div>
+                            <input type="file" class="form-control" id="material" name="material" accept=".pdf,.ppt,.pptx" required>
+                            <div class="form-text">Allowed types: PDF, PPT, PPTX only. Max size: 10MB.</div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
