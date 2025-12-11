@@ -93,11 +93,39 @@ class Teacher extends BaseController
     public function classes()
     {
         // Role-based access control is handled by the RoleAuth filter
+        $courseModel = new \App\Models\CourseModel();
+        $enrollmentModel = new \App\Models\EnrollmentModel();
+
+        $teacherId = session()->get('userId');
+        $courses = $courseModel->getCoursesByTeacher($teacherId);
+
+        // Pre-compute enrollment counts and quick stats for the teacher
+        $enrollmentCounts = [];
+        $totalEnrollments = 0;
+        $totalUnits = 0;
+        $activeCourses = 0;
+
+        foreach ($courses as $course) {
+            $count = $enrollmentModel->getCourseEnrollmentCount($course['course_id']);
+            $enrollmentCounts[$course['course_id']] = $count;
+            $totalEnrollments += $count;
+            $totalUnits += $course['units'] ?? 3;
+            $activeCourses += empty($course['semester']) ? 0 : 1;
+        }
+
         return view('teacher/classes', array_merge($this->data, [
             'title' => 'My Classes',
             'userName' => session()->get('userName'),
             'userEmail' => session()->get('userEmail'),
-            'userRole' => session()->get('userRole')
+            'userRole' => session()->get('userRole'),
+            'courses' => $courses,
+            'enrollmentCounts' => $enrollmentCounts,
+            'courseStats' => [
+                'totalCourses' => count($courses),
+                'totalEnrollments' => $totalEnrollments,
+                'totalUnits' => $totalUnits,
+                'activeCourses' => $activeCourses,
+            ],
         ]));
     }
 

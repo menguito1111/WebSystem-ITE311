@@ -59,12 +59,7 @@
     </div>
 
     <div id="coursesContainer" class="row">
-        <?php
-        // For now, we'll get all courses. In a real implementation, you'd filter by teacher
-        $courseModel = new \App\Models\CourseModel();
-        $courses = $courseModel->findAll();
-
-        if (!empty($courses)): ?>
+        <?php if (!empty($courses)): ?>
             <?php foreach ($courses as $course): ?>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card h-100">
@@ -85,11 +80,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <small class="text-muted">
                                         <i class="fas fa-users me-1"></i>
-                                        <?php
-                                        $enrollmentModel = new \App\Models\EnrollmentModel();
-                                        $enrollmentCount = $enrollmentModel->getCourseEnrollmentCount($course['course_id']);
-                                        echo $enrollmentCount . ' enrolled';
-                                        ?>
+                                        <?= ($enrollmentCounts[$course['course_id']] ?? 0) . ' enrolled' ?>
                                     </small>
                                     <small class="text-muted">
                                         <i class="fas fa-calendar me-1"></i>
@@ -134,47 +125,24 @@
                         <div class="row text-center">
                             <div class="col-md-3">
                                 <div class="border-end">
-                                    <h4 class="text-primary mb-1"><?= count($courses) ?></h4>
+                                    <h4 class="text-primary mb-1"><?= $courseStats['totalCourses'] ?? 0 ?></h4>
                                     <small class="text-muted">Total Courses</small>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="border-end">
-                                    <h4 class="text-success mb-1">
-                                        <?php
-                                        $totalEnrollments = 0;
-                                        foreach ($courses as $course) {
-                                            $totalEnrollments += $enrollmentModel->getCourseEnrollmentCount($course['course_id']);
-                                        }
-                                        echo $totalEnrollments;
-                                        ?>
-                                    </h4>
+                                    <h4 class="text-success mb-1"><?= $courseStats['totalEnrollments'] ?? 0 ?></h4>
                                     <small class="text-muted">Total Enrollments</small>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="border-end">
-                                    <h4 class="text-info mb-1">
-                                        <?php
-                                        $totalUnits = 0;
-                                        foreach ($courses as $course) {
-                                            $totalUnits += $course['units'] ?? 3;
-                                        }
-                                        echo $totalUnits;
-                                        ?>
-                                    </h4>
+                                    <h4 class="text-info mb-1"><?= $courseStats['totalUnits'] ?? 0 ?></h4>
                                     <small class="text-muted">Total Units</small>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <h4 class="text-warning mb-1">
-                                    <?php
-                                    $activeCourses = count(array_filter($courses, function($course) {
-                                        return ($course['semester'] ?? '') !== '';
-                                    }));
-                                    echo $activeCourses;
-                                    ?>
-                                </h4>
+                                <h4 class="text-warning mb-1"><?= $courseStats['activeCourses'] ?? 0 ?></h4>
                                 <small class="text-muted">Active Courses</small>
                             </div>
                         </div>

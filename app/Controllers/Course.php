@@ -261,9 +261,17 @@ class Course extends BaseController
         // Trim and sanitize
         $searchTerm = is_string($searchTerm) ? trim($searchTerm) : '';
 
+        // If a teacher is searching, restrict results to their assigned courses
+        if (session()->get('userRole') === 'teacher') {
+            $this->courseModel->where('teacher_id', session()->get('userId'));
+        }
+
         if (!empty($searchTerm)) {
-            $this->courseModel->like('course_name', $searchTerm);
-            $this->courseModel->orLike('description', $searchTerm);
+            $this->courseModel
+                ->groupStart()
+                ->like('course_name', $searchTerm)
+                ->orLike('description', $searchTerm)
+                ->groupEnd();
         }
 
         $courses = $this->courseModel->findAll();
