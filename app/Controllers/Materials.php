@@ -33,8 +33,11 @@ class Materials extends BaseController
             // Handle file upload
             $validation = \Config\Services::validation();
             $validation->setRules([
-                // Restrict uploads to PDF or PowerPoint only
-                'material' => 'uploaded[material]|max_size[material,10240]|ext_in[material,pdf,ppt,pptx]|mime_in[material,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation]',
+                // Restrict uploads to common doc formats
+                'material' => 'uploaded[material]'
+                    . '|max_size[material,10240]'
+                    . '|ext_in[material,pdf,ppt,pptx,doc,docx]'
+                    . '|mime_in[material,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document]',
             ]);
 
             if (!$validation->withRequest($this->request)->run()) {
